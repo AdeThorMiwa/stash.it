@@ -1,0 +1,16 @@
+[package]
+name = "user"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+shared = { path = "../shared" }
+macros = { path = "../macros" }
+email_address = "0.2.9"
+serde = { workspace = true }
+chrono = { workspace = true }
+async-trait = { workspace = true }
+more-di = { workspace = true }
+once_cell = { workspace = true }
+send_wrapper = { workspace = true }
+ctor = { workspace = true }
