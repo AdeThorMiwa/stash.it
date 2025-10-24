@@ -60,7 +60,7 @@ User
 
 ### Domain Events
 
-- UserRegistered [Outbound]
+- UserCreated [Outbound]
 - UserAuthenticated [Outbound]
 - UserLoggedOut [Outbound]
 
