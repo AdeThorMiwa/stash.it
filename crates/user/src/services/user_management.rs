@@ -9,7 +9,10 @@ use shared::{
     domain::value_objects::pid::Pid,
     infrastructure::{
         messaging::EventBus,
-        types::{Result, error::Error},
+        types::{
+            Result,
+            error::{DomainError, Error},
+        },
     },
 };
 use std::sync::Arc;
@@ -44,7 +47,7 @@ impl UserManagementService {
             return Ok(user);
         }
 
-        Err(Error::DomainEntityNotFound)
+        Err(Error::DomainError(DomainError::EntityNotFound))
     }
 
     pub async fn update_user_last_login(&self, user_id: &Pid) -> Result<()> {
@@ -54,6 +57,6 @@ impl UserManagementService {
             return Ok(());
         }
 
-        Err(Error::DomainEntityNotFound)
+        Err(Error::DomainError(DomainError::EntityNotFound))
     }
 }

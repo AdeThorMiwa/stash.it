@@ -1,4 +1,9 @@
 #[derive(Debug, Clone)]
+pub enum DomainError {
+    EntityNotFound,
+}
+
+#[derive(Debug, Clone)]
 pub enum Error {
-    DomainEntityNotFound,
+    DomainError(DomainError),
 }
