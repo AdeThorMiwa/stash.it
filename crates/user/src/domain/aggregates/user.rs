@@ -4,11 +4,11 @@ use shared::domain::value_objects::{date::Date, pid::Pid};
 
 #[derive(Debug, Clone)]
 pub struct User {
-    pub(crate) pid: Pid,
-    pub(crate) email: EmailAddress,
-    pub(crate) status: UserStatus,
-    pub(crate) created_at: Date,
-    pub(crate) last_login_at: Date,
+    pid: Pid,
+    email: EmailAddress,
+    status: UserStatus,
+    created_at: Date,
+    last_login_at: Date,
 }
 
 impl User {
@@ -33,5 +33,12 @@ impl User {
     /// update user last login time to now
     pub fn update_last_login(&mut self) {
         self.last_login_at = Utc::now()
+    }
+}
+
+/// Getters
+impl User {
+    pub fn get_pid(&self) -> Pid {
+        self.pid.clone()
     }
 }

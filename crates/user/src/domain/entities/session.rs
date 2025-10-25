@@ -3,10 +3,10 @@ use chrono::{TimeDelta, Utc};
 use shared::domain::value_objects::{date::Date, pid::Pid};
 
 pub struct Session {
-    pub(crate) pid: Pid,
-    pub(crate) user_id: Pid,
-    pub(crate) code: OtpCode,
-    pub(crate) expires_at: Date,
+    pid: Pid,
+    user_id: Pid,
+    code: OtpCode,
+    expires_at: Date,
 }
 
 impl Session {

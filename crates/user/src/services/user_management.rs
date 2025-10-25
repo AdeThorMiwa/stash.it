@@ -32,7 +32,7 @@ impl UserManagementService {
     pub async fn create_user(&self, email: &EmailAddress) -> Result<User> {
         let user = User::new(email.clone());
         self.user_repo.save(&user).await?;
-        let user_created_event = Box::new(UserCreatedEvent::new(user.pid.clone()));
+        let user_created_event = Box::new(UserCreatedEvent::new(user.get_pid()));
         self.event_bus.publish(user_created_event).await?;
         Ok(user)
     }
