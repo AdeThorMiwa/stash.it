@@ -2,6 +2,7 @@ use crate::domain::value_objects::{email::EmailAddress, user_status::UserStatus}
 use chrono::Utc;
 use shared::domain::value_objects::{date::Date, pid::Pid};
 
+#[allow(dead_code)]
 #[derive(Debug, Clone)]
 pub struct User {
     pid: Pid,

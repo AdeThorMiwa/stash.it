@@ -2,6 +2,7 @@ use crate::domain::value_objects::otp_code::OtpCode;
 use chrono::{TimeDelta, Utc};
 use shared::domain::value_objects::{date::Date, pid::Pid};
 
+#[allow(dead_code)]
 pub struct Session {
     pid: Pid,
     user_id: Pid,
