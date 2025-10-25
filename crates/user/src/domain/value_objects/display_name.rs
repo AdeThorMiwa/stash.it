@@ -3,7 +3,6 @@ use std::str::FromStr;
 use serde::Deserialize;
 use thiserror::Error;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DisplayName(String);
 
@@ -42,8 +41,7 @@ impl<'de> Deserialize<'de> for DisplayName {
         D: serde::Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        let display_name =
-            DisplayName::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
+        let display_name = DisplayName::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
         Ok(display_name)
     }
 }

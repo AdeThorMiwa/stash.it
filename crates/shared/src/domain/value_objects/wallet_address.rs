@@ -2,7 +2,6 @@ use alloy::{hex::FromHexError, primitives::Address};
 use serde::Deserialize;
 use std::str::FromStr;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WalletAddress(String);
 
@@ -28,8 +27,7 @@ impl<'de> Deserialize<'de> for WalletAddress {
         D: serde::Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        let address =
-            WalletAddress::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
+        let address = WalletAddress::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
         Ok(address)
     }
 }

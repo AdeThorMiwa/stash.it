@@ -1,8 +1,6 @@
 use proc_macro::TokenStream;
 
-use crate::di::{
-    container_get_impl, container_get_many_impl, initialize_container_impl, inject_impl,
-};
+use crate::di::{container_get_impl, container_get_many_impl, initialize_container_impl, inject_impl};
 
 extern crate proc_macro;
 mod di;

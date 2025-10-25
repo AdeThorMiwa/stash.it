@@ -11,9 +11,9 @@ pub struct UserCreatedEvent {
 }
 
 impl UserCreatedEvent {
-    pub fn new(user_id: Pid) -> Box<Self> {
+    pub fn new(user_id: &Pid) -> Box<Self> {
         Box::new(Self {
-            user_id,
+            user_id: user_id.to_owned(),
             created_at: Utc::now(),
         })
     }
@@ -36,15 +36,16 @@ impl DomainEvent for UserCreatedEvent {
 #[derive(Debug)]
 pub struct ProfileCreatedEvent {
     user_id: Pid,
+    #[allow(dead_code)]
     profile_id: Pid,
     created_at: Date,
 }
 
 impl ProfileCreatedEvent {
-    pub fn new(user_id: Pid, profile_id: Pid) -> Box<Self> {
+    pub fn new(user_id: &Pid, profile_id: &Pid) -> Box<Self> {
         Box::new(Self {
-            user_id,
-            profile_id,
+            user_id: user_id.to_owned(),
+            profile_id: profile_id.to_owned(),
             created_at: Utc::now(),
         })
     }

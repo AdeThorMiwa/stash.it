@@ -1,7 +1,7 @@
-use darling::{ast::NestedMeta, Error, FromMeta};
+use darling::{Error, FromMeta, ast::NestedMeta};
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{parse_macro_input, parse_quote, Expr, ItemStruct};
+use syn::{Expr, ItemStruct, parse_macro_input, parse_quote};
 
 pub fn initialize_container_impl(_: TokenStream) -> TokenStream {
     quote! {
@@ -59,10 +59,7 @@ pub fn inject_impl(args: TokenStream, item: TokenStream) -> TokenStream {
         }
     };
 
-    let InjectParams {
-        as_impl,
-        descriptor,
-    } = match InjectParams::from_list(&attr_args) {
+    let InjectParams { as_impl, descriptor } = match InjectParams::from_list(&attr_args) {
         Ok(params) => params,
         Err(error) => {
             return proc_macro::TokenStream::from(Error::from(error).write_errors());
@@ -84,10 +81,7 @@ pub fn inject_impl(args: TokenStream, item: TokenStream) -> TokenStream {
     let descriptor_method = descriptor.as_deref().unwrap_or("singleton");
     let descriptor_ident = syn::Ident::new(descriptor_method, proc_macro2::Span::call_site());
 
-    let reg_fn_name = syn::Ident::new(
-        &format!("auto_reg_{}", ident),
-        proc_macro2::Span::call_site(),
-    );
+    let reg_fn_name = syn::Ident::new(&format!("auto_reg_{}", ident), proc_macro2::Span::call_site());
 
     let expanded = quote::quote! {
         use di::*;

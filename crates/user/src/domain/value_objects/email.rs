@@ -2,7 +2,6 @@ use email_address::{EmailAddress as Address, Error};
 use serde::Deserialize;
 use std::str::FromStr;
 
-#[allow(dead_code)]
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct EmailAddress(Address);
 
@@ -27,8 +26,7 @@ impl<'de> Deserialize<'de> for EmailAddress {
         D: serde::Deserializer<'de>,
     {
         let s = String::deserialize(deserializer)?;
-        let email_address =
-            EmailAddress::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
+        let email_address = EmailAddress::from_str(&s).map_err(|e| serde::de::Error::custom(e.to_string()))?;
         Ok(email_address)
     }
 }

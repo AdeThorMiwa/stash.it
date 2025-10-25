@@ -62,12 +62,7 @@ impl UserManagementService {
         Err(Error::DomainError(DomainError::EntityNotFound))
     }
 
-    pub async fn create_user_profile(
-        &self,
-        user_id: &Pid,
-        display_name: &DisplayName,
-        wallet_address: &WalletAddress,
-    ) -> Result<Profile> {
+    pub async fn create_user_profile(&self, user_id: &Pid, display_name: &DisplayName, wallet_address: &WalletAddress) -> Result<Profile> {
         let user = self
             .user_repo
             .find_by_pid(&user_id)
@@ -80,7 +75,7 @@ impl UserManagementService {
 
         let profile = Profile::new(&user.get_pid(), display_name, wallet_address);
         self.profile_repo.save(&profile).await?;
-        let event = ProfileCreatedEvent::new(user_id.clone(), profile.get_pid());
+        let event = ProfileCreatedEvent::new(&user_id, profile.get_pid());
         self.event_bus.publish(event).await?;
 
         Ok(profile)

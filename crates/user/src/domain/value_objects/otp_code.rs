@@ -10,3 +10,9 @@ impl OtpCode {
         Self(six_digit_code)
     }
 }
+
+impl ToString for OtpCode {
+    fn to_string(&self) -> String {
+        format!("{}", self.0)
+    }
+}

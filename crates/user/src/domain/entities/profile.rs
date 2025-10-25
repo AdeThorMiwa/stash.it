@@ -20,7 +20,7 @@ impl Profile {
         }
     }
 
-    pub fn get_pid(&self) -> Pid {
-        self.pid.clone()
+    pub fn get_pid(&self) -> &Pid {
+        &self.pid
     }
 }

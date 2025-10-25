@@ -22,9 +22,7 @@ impl Pid {
 impl FromStr for Pid {
     type Err = PidError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        Uuid::from_str(s)
-            .map(|id| Self(id))
-            .map_err(|_| PidError::ParseError)
+        Uuid::from_str(s).map(|id| Self(id)).map_err(|_| PidError::ParseError)
     }
 }
 
