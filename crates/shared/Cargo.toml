@@ -9,3 +9,4 @@ thiserror = { workspace = true }
 serde = { workspace = true }
 chrono = { workspace = true }
 async-trait = { workspace = true }
+alloy = "1.0.41"

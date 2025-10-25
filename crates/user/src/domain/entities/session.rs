@@ -3,6 +3,7 @@ use chrono::{TimeDelta, Utc};
 use shared::domain::value_objects::{date::Date, pid::Pid};
 
 #[allow(dead_code)]
+#[derive(Debug, Clone)]
 pub struct Session {
     pid: Pid,
     user_id: Pid,

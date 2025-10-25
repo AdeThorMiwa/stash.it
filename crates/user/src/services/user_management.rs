@@ -1,12 +1,13 @@
 use crate::domain::{
     aggregates::user::User,
-    events::UserCreatedEvent,
-    repositories::UserRepository,
-    value_objects::{email::EmailAddress, user_status::UserStatus},
+    entities::profile::Profile,
+    events::{ProfileCreatedEvent, UserCreatedEvent},
+    repositories::{ProfileRepository, UserRepository},
+    value_objects::{display_name::DisplayName, email::EmailAddress, user_status::UserStatus},
 };
 use macros::inject;
 use shared::{
-    domain::value_objects::pid::Pid,
+    domain::value_objects::{pid::Pid, wallet_address::WalletAddress},
     infrastructure::{
         messaging::EventBus,
         types::{
@@ -20,6 +21,7 @@ use std::sync::Arc;
 #[inject]
 pub struct UserManagementService {
     user_repo: Arc<dyn UserRepository>,
+    profile_repo: Arc<dyn ProfileRepository>,
     event_bus: Arc<dyn EventBus>,
 }
 
@@ -35,7 +37,7 @@ impl UserManagementService {
     pub async fn create_user(&self, email: &EmailAddress) -> Result<User> {
         let user = User::new(email.clone());
         self.user_repo.save(&user).await?;
-        let user_created_event = Box::new(UserCreatedEvent::new(user.get_pid()));
+        let user_created_event = UserCreatedEvent::new(user.get_pid());
         self.event_bus.publish(user_created_event).await?;
         Ok(user)
     }
@@ -58,5 +60,29 @@ impl UserManagementService {
         }
 
         Err(Error::DomainError(DomainError::EntityNotFound))
+    }
+
+    pub async fn create_user_profile(
+        &self,
+        user_id: &Pid,
+        display_name: &DisplayName,
+        wallet_address: &WalletAddress,
+    ) -> Result<Profile> {
+        let user = self
+            .user_repo
+            .find_by_pid(&user_id)
+            .await?
+            .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
+
+        if let Some(_) = self.profile_repo.find_by_user_id(&user_id).await? {
+            return Err(Error::DomainError(DomainError::EntityAlreadyExist));
+        }
+
+        let profile = Profile::new(&user.get_pid(), display_name, wallet_address);
+        self.profile_repo.save(&profile).await?;
+        let event = ProfileCreatedEvent::new(user_id.clone(), profile.get_pid());
+        self.event_bus.publish(event).await?;
+
+        Ok(profile)
     }
 }
