@@ -25,11 +25,27 @@ impl Session {
         &self.pid
     }
 
+    pub fn get_user_id(&self) -> &Pid {
+        &self.user_id
+    }
+
     pub fn get_code(&self) -> &OtpCode {
         &self.code
     }
 
     fn expiry() -> Date {
         Utc::now() + TimeDelta::minutes(10)
+    }
+
+    pub fn has_expired(&self) -> bool {
+        self.expires_at.le(&Utc::now())
+    }
+
+    pub fn is_valid_code(&self, code: &str) -> bool {
+        self.code.to_string() == code.to_owned()
+    }
+
+    pub fn expire(&self) {
+        self.expires_at = Utc::now() - TimeDelta::minutes(10)
     }
 }

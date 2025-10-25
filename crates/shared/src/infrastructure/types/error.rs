@@ -2,6 +2,7 @@
 pub enum DomainError {
     EntityNotFound,
     EntityAlreadyExist,
+    EntityInvalid,
 }
 
 #[derive(Debug, Clone)]

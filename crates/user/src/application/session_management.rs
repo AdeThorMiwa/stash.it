@@ -22,4 +22,9 @@ impl SessionManagementService {
     pub async fn get_session_by_id(&self, session_id: &Pid) -> Result<Option<Session>> {
         self.session_repo.find_by_pid(session_id).await
     }
+
+    pub async fn expire_session(&self, session: &mut Session) -> Result<()> {
+        session.expire();
+        self.session_repo.save(&session).await
+    }
 }

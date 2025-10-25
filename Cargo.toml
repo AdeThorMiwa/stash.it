@@ -17,3 +17,4 @@ thiserror = "2.0.17"
 regex = "1.12.2"
 chrono = { version = "0.4", features = ["serde"] }
 async-trait = "0.1.89"
+derive_builder = "0.20.2"

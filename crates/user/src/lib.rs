@@ -1,6 +1,8 @@
 use macros::initialize_container;
 
+pub mod application;
 mod domain;
-pub mod services;
+mod infrastructure;
 
 initialize_container!();
+

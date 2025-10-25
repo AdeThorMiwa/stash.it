@@ -14,7 +14,7 @@ pub struct MailingService {
 impl MailingService {
     pub async fn send_authentication_mail(&self, user: &User, session: &Session) -> Result<()> {
         let email = Email {
-            from: "".to_string(),
+            from: "noreply@stash.it".to_string(),
             to: user.get_email().to_string(),
             subject: "OTP Request".to_owned(),
             html: format!("You OTP code is {}", session.get_code().to_string()),
