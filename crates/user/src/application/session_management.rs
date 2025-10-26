@@ -1,9 +1,9 @@
 use crate::domain::{entities::session::Session, repositories::SessionRepository};
-use macros::inject;
+use di::injectable;
 use shared::{domain::value_objects::pid::Pid, infrastructure::types::Result};
 use std::sync::Arc;
 
-#[inject]
+#[injectable]
 pub struct SessionManagementService {
     session_repo: Arc<dyn SessionRepository>,
 }

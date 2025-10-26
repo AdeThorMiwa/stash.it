@@ -46,4 +46,8 @@ impl User {
     pub fn get_email(&self) -> &EmailAddress {
         &self.email
     }
+
+    pub fn get_status(&self) -> &UserStatus {
+        &self.status
+    }
 }

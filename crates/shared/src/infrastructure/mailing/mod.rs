@@ -1,7 +1,7 @@
+use crate::infrastructure::types::Result;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
-
-use crate::infrastructure::types::Result;
+pub mod stub_mailer;
 
 /// The structure representing an email details.
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -24,7 +24,14 @@ pub struct Email {
     pub cc: Option<String>,
 }
 
+#[derive(Debug, Clone, Default)]
+pub struct Deliveries {
+    pub count: usize,
+    pub messages: Vec<String>,
+}
+
 #[async_trait]
 pub trait Mailer: Sync + Send {
     async fn mail(&self, email: &Email) -> Result<()>;
+    async fn deliveries(&self) -> Deliveries;
 }

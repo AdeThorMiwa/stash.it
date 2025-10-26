@@ -8,4 +8,5 @@ pub enum DomainError {
 #[derive(Debug, Clone)]
 pub enum Error {
     DomainError(DomainError),
+    ServiceError,
 }

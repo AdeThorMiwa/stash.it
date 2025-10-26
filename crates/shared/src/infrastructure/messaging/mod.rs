@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::infrastructure::{messaging::event::DomainEvent, types::Result};
 use async_trait::async_trait;
 pub mod event;
+pub mod memory;
 
 /// Trait for handling domain events
 #[async_trait]

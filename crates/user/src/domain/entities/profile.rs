@@ -23,4 +23,8 @@ impl Profile {
     pub fn get_pid(&self) -> &Pid {
         &self.pid
     }
+
+    pub fn get_user_id(&self) -> &Pid {
+        &self.user_id
+    }
 }

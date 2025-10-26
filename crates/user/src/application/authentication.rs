@@ -3,7 +3,7 @@ use crate::{
     domain::value_objects::email::EmailAddress,
     infrastructure::auth::jwt_service::JWTService,
 };
-use macros::inject;
+use di::injectable;
 use shared::{
     domain::value_objects::pid::Pid,
     infrastructure::types::{
@@ -13,7 +13,7 @@ use shared::{
 };
 use std::sync::Arc;
 
-#[inject]
+#[injectable]
 pub struct AuthenticationService {
     session_service: Arc<SessionManagementService>,
     user_service: Arc<UserManagementService>,
@@ -35,7 +35,7 @@ impl AuthenticationService {
     }
 
     pub async fn authenticate(&self, session_id: &Pid, code: &str) -> Result<String> {
-        let session = match self.session_service.get_session_by_id(session_id).await? {
+        let mut session = match self.session_service.get_session_by_id(session_id).await? {
             Some(session) => session,
             None => return Err(Error::DomainError(DomainError::EntityNotFound)),
         };
@@ -44,7 +44,7 @@ impl AuthenticationService {
             return Err(Error::DomainError(DomainError::EntityInvalid));
         }
 
-        self.session_service.expire_session(&session).await?;
+        self.session_service.expire_session(&mut session).await?;
 
         let user = self
             .user_service

@@ -1,12 +1,12 @@
 use crate::domain::{aggregates::user::User, entities::session::Session};
-use macros::inject;
+use di::injectable;
 use shared::infrastructure::{
     mailing::{Email, Mailer},
     types::Result,
 };
 use std::sync::Arc;
 
-#[inject]
+#[injectable]
 pub struct MailingService {
     mailer: Arc<dyn Mailer>,
 }

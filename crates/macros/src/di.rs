@@ -1,9 +1,11 @@
 use darling::{Error, FromMeta, ast::NestedMeta};
-use proc_macro::TokenStream;
+use proc_macro::{ TokenStream};
 use quote::quote;
-use syn::{Expr, ItemStruct, parse_macro_input, parse_quote};
+use syn::{parse_macro_input, parse_quote, Expr, Ident, ItemStruct};
 
-pub fn initialize_container_impl(_: TokenStream) -> TokenStream {
+pub fn initialize_container_impl(input: TokenStream) -> TokenStream {
+    let func_name = parse_macro_input!(input as Ident);
+
     quote! {
         use di::{ServiceCollection, ServiceDescriptor, ServiceProvider};
         use once_cell::sync::Lazy;
@@ -35,7 +37,11 @@ pub fn initialize_container_impl(_: TokenStream) -> TokenStream {
             }
         }
 
-        pub static DI_CONTAINER: Lazy<Arc<DIStore>> = Lazy::new(|| Arc::new(DIStore::new()));
+        pub static DI_CONTAINER: Lazy<Arc<DIStore>> = Lazy::new(|| {
+            let store = Arc::new(DIStore::new());
+            #func_name(store.clone());
+            store
+        });
 
         pub static DI_PROVIDER: Lazy<Arc<DIProvider>> =
             Lazy::new(|| Arc::new(DIProvider::new(DI_CONTAINER.provider())));

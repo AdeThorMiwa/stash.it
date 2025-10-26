@@ -36,3 +36,9 @@ impl<'de> Deserialize<'de> for Pid {
         Ok(pid)
     }
 }
+
+impl ToString for Pid {
+    fn to_string(&self) -> String {
+        self.0.to_string()
+    }
+}

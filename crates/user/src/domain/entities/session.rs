@@ -45,7 +45,7 @@ impl Session {
         self.code.to_string() == code.to_owned()
     }
 
-    pub fn expire(&self) {
+    pub fn expire(&mut self) {
         self.expires_at = Utc::now() - TimeDelta::minutes(10)
     }
 }

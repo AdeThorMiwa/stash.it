@@ -5,7 +5,7 @@ use crate::domain::{
     repositories::{ProfileRepository, UserRepository},
     value_objects::{display_name::DisplayName, email::EmailAddress, user_status::UserStatus},
 };
-use macros::inject;
+use di::injectable;
 use shared::{
     domain::value_objects::{pid::Pid, wallet_address::WalletAddress},
     infrastructure::{
@@ -18,7 +18,7 @@ use shared::{
 };
 use std::sync::Arc;
 
-#[inject]
+#[injectable]
 pub struct UserManagementService {
     user_repo: Arc<dyn UserRepository>,
     profile_repo: Arc<dyn ProfileRepository>,
