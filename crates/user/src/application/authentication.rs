@@ -45,13 +45,7 @@ impl AuthenticationService {
         }
 
         self.session_service.expire_session(&mut session).await?;
-
-        let user = self
-            .user_service
-            .get_user_by_pid(session.get_user_id())
-            .await?
-            .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
-
+        let user = self.user_service.update_user_last_login(session.get_user_id()).await?;
         let token = self.jwt_service.generate_token(&user)?;
 
         Ok(token)
