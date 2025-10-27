@@ -12,10 +12,12 @@ pub struct InMemoryEventBus {}
 #[async_trait]
 impl EventBus for InMemoryEventBus {
     async fn publish(&self, event: Box<dyn DomainEvent>) -> Result<()> {
+        println!("event: {:?}", event);
         Ok(())
     }
 
     async fn subscribe(&self, event_type: &str, handler: Arc<dyn EventHandler>) -> Result<()> {
+        println!("event_type: {:?} {:?}", event_type, handler);
         Ok(())
     }
 }

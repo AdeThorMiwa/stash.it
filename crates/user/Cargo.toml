@@ -21,3 +21,7 @@ derive_builder = { workspace = true }
 config = { workspace = true }
 tokio = { workspace = true }
 regex = { workspace = true }
+insta = { workspace = true }
+
+[features]
+testing = []

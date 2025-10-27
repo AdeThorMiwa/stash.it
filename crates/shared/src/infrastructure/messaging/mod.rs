@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt::Debug, sync::Arc};
 
 use crate::infrastructure::{messaging::event::DomainEvent, types::Result};
 use async_trait::async_trait;
@@ -7,7 +7,7 @@ pub mod memory;
 
 /// Trait for handling domain events
 #[async_trait]
-pub trait EventHandler: Send + Sync {
+pub trait EventHandler: Send + Sync + Debug {
     async fn handle(&self, event: &dyn DomainEvent) -> Result<()>;
 }
 

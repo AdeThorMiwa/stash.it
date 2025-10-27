@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::domain::{aggregates::user::User, repositories::UserRepository, value_objects::email::EmailAddress};
 use async_trait::async_trait;
 use di::injectable;

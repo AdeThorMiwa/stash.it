@@ -18,7 +18,7 @@ impl Environment {
 
     pub fn detect() -> Self {
         // Highest priority: cargo test
-        if cfg!(test) {
+        if cfg!(feature = "testing") {
             return Environment::Test;
         }
 
@@ -67,7 +67,6 @@ pub fn get_config() -> Result<Config, config::ConfigError> {
         .and_then(|v| v.try_into().ok())
         .unwrap_or_else(Environment::detect);
 
-    println!("config_dir: {:?} {}", config_dir, environment.as_str());
     let environment_filename = format!("{}.yaml", environment.as_str());
 
     // Init config reader

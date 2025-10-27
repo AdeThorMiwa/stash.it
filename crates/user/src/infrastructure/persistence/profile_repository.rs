@@ -2,7 +2,6 @@ use crate::domain::{entities::profile::Profile, repositories::ProfileRepository}
 use async_trait::async_trait;
 use di::injectable;
 use shared::{domain::value_objects::pid::Pid, infrastructure::types::Result};
-use std::sync::Arc;
 use tokio::sync::Mutex;
 
 #[injectable(ProfileRepository)]
