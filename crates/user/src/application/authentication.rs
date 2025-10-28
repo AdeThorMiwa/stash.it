@@ -21,6 +21,7 @@ pub struct AuthenticationService {
     jwt_service: Arc<JWTService>,
 }
 
+// @todo logout method
 impl AuthenticationService {
     pub async fn request_authentication_code(&self, email: &EmailAddress) -> Result<Pid> {
         let user = match self.user_service.get_user_by_email(&email).await? {
@@ -48,6 +49,7 @@ impl AuthenticationService {
         let user = self.user_service.update_user_last_login(session.get_user_id()).await?;
         let token = self.jwt_service.generate_token(&user)?;
 
+        // @todo publish UserAuthenticated
         Ok(token)
     }
 }

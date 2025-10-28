@@ -9,4 +9,5 @@ pub enum DomainError {
 pub enum Error {
     DomainError(DomainError),
     ServiceError,
+    AssertError(String),
 }
