@@ -1,14 +1,20 @@
 use crate::{
     application::{mailing::MailingService, session::SessionManagementService, user::UserManagementService},
-    domain::value_objects::email::EmailAddress,
+    domain::{
+        events::{SessionActivatedEvent, SessionTerminatedEvent},
+        value_objects::email::EmailAddress,
+    },
     infrastructure::auth::jwt_service::JWTService,
 };
 use di::injectable;
 use shared::{
     domain::value_objects::pid::Pid,
-    infrastructure::types::{
-        Result,
-        error::{DomainError, Error},
+    infrastructure::{
+        messaging::EventBus,
+        types::{
+            Result,
+            error::{DomainError, Error},
+        },
     },
 };
 use std::sync::Arc;
@@ -19,6 +25,7 @@ pub struct AuthenticationService {
     user_service: Arc<UserManagementService>,
     mail_service: Arc<MailingService>,
     jwt_service: Arc<JWTService>,
+    event_bus: Arc<dyn EventBus>,
 }
 
 // @todo logout method
@@ -48,6 +55,8 @@ impl AuthenticationService {
         self.session_service.activate_session(&mut session).await?;
         let user = self.user_service.update_user_last_login(session.get_user_id()).await?;
         let token = self.jwt_service.generate_token(&user)?;
+        let session_activated_event = SessionActivatedEvent::new(session.get_user_id(), session.get_pid());
+        self.event_bus.publish(session_activated_event).await?;
 
         // @todo publish UserAuthenticated
         Ok(token)
@@ -71,6 +80,9 @@ impl AuthenticationService {
             .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
 
         self.session_service.expire_session(&mut session).await?;
+        let session_terminated_event = SessionTerminatedEvent::new(session.get_user_id(), session.get_pid());
+        self.event_bus.publish(session_terminated_event).await?;
+
         Ok(())
     }
 }
