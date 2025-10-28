@@ -1,9 +1,6 @@
-use derive_builder::Builder;
+use crate::domain::ledger_entry::entry_type::LedgerEntryType;
 use shared::domain::value_objects::{asset::Asset, mula::Mula, pid::Pid};
 
-use crate::domain::ledger_entry::entry_type::LedgerEntryType;
-
-#[derive(Builder)]
 pub struct CreateLedgerEntryCommand {
     pub stash_id: Pid,
     pub entry_type: LedgerEntryType,

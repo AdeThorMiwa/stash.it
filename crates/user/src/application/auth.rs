@@ -28,7 +28,6 @@ pub struct AuthenticationService {
     event_bus: Arc<dyn EventBus>,
 }
 
-// @todo logout method
 impl AuthenticationService {
     pub async fn create_new_session(&self, email: &EmailAddress) -> Result<Pid> {
         let user = match self.user_service.get_user_by_email(&email).await? {
@@ -58,7 +57,6 @@ impl AuthenticationService {
         let session_activated_event = SessionActivatedEvent::new(session.get_user_id(), session.get_pid());
         self.event_bus.publish(session_activated_event).await?;
 
-        // @todo publish UserAuthenticated
         Ok(token)
     }
 

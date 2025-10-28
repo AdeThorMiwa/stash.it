@@ -6,6 +6,7 @@ use crate::{
         repositories::{FindManyLedgerQueryBuilder, LedgerRepository},
     },
 };
+use di::injectable;
 use shared::infrastructure::{
     messaging::EventBus,
     types::{Result, error::Error},
@@ -14,6 +15,7 @@ use std::sync::Arc;
 
 pub mod command;
 
+#[injectable]
 pub struct LedgerService {
     ledger_repo: Arc<dyn LedgerRepository>,
     event_bus: Arc<dyn EventBus>,
