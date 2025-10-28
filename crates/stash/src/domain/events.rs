@@ -100,3 +100,34 @@ impl DomainEvent for StashBalanceUpdatedEvent {
         self.created_at.clone()
     }
 }
+
+#[derive(Debug)]
+pub struct LedgerEntryCreatedEvent {
+    stash_id: Pid,
+    entry_id: Pid,
+    created_at: Date,
+}
+
+impl LedgerEntryCreatedEvent {
+    pub fn new(stash_id: &Pid, entry_id: &Pid) -> Box<Self> {
+        Box::new(Self {
+            stash_id: stash_id.to_owned(),
+            entry_id: entry_id.to_owned(),
+            created_at: Utc::now(),
+        })
+    }
+}
+
+impl DomainEvent for LedgerEntryCreatedEvent {
+    fn event_type(&self) -> &str {
+        "LedgerEntryCreated"
+    }
+
+    fn aggregate_id(&self) -> Pid {
+        self.stash_id.clone()
+    }
+
+    fn occurred_at(&self) -> Date {
+        self.created_at.clone()
+    }
+}

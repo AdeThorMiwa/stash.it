@@ -10,4 +10,5 @@ pub enum Error {
     DomainError(DomainError),
     ServiceError,
     AssertError(String),
+    BuilderError(String),
 }
