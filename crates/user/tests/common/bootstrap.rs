@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use user::{
     application::{
-        authentication::AuthenticationService, mailing::MailingService, session_management::SessionManagementService,
-        user_management::UserManagementService,
+        auth::AuthenticationService, mailing::MailingService, session::SessionManagementService,
+        user::UserManagementService,
     },
     infrastructure::{
         auth::jwt_service::JWTService,

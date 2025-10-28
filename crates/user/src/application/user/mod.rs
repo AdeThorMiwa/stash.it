@@ -1,5 +1,5 @@
 use crate::{
-    application::user_management::command::CreateUserProfileCommand,
+    application::user::command::CreateUserProfileCommand,
     domain::{
         aggregates::user::User,
         entities::profile::Profile,
