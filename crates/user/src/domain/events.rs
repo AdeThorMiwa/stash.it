@@ -64,3 +64,65 @@ impl DomainEvent for ProfileCreatedEvent {
         self.created_at.clone()
     }
 }
+
+#[derive(Debug)]
+pub struct SessionActivatedEvent {
+    user_id: Pid,
+    session_id: Pid,
+    created_at: Date,
+}
+
+impl SessionActivatedEvent {
+    pub fn new(user_id: &Pid, session_id: &Pid) -> Box<Self> {
+        Box::new(Self {
+            user_id: user_id.to_owned(),
+            session_id: session_id.to_owned(),
+            created_at: Utc::now(),
+        })
+    }
+}
+
+impl DomainEvent for SessionActivatedEvent {
+    fn event_type(&self) -> &str {
+        "SessionActivated"
+    }
+
+    fn aggregate_id(&self) -> Pid {
+        self.user_id.clone()
+    }
+
+    fn occurred_at(&self) -> Date {
+        self.created_at.clone()
+    }
+}
+
+#[derive(Debug)]
+pub struct SessionTerminatedEvent {
+    user_id: Pid,
+    session_id: Pid,
+    created_at: Date,
+}
+
+impl SessionTerminatedEvent {
+    pub fn new(user_id: &Pid, session_id: &Pid) -> Box<Self> {
+        Box::new(Self {
+            user_id: user_id.to_owned(),
+            session_id: session_id.to_owned(),
+            created_at: Utc::now(),
+        })
+    }
+}
+
+impl DomainEvent for SessionTerminatedEvent {
+    fn event_type(&self) -> &str {
+        "SessionTerminated"
+    }
+
+    fn aggregate_id(&self) -> Pid {
+        self.user_id.clone()
+    }
+
+    fn occurred_at(&self) -> Date {
+        self.created_at.clone()
+    }
+}
