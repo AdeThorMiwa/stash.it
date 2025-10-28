@@ -3,7 +3,7 @@ use std::str::FromStr;
 use serde::Deserialize;
 use thiserror::Error;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StashName(String);
 
 #[derive(Debug, Error)]

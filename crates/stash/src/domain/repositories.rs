@@ -14,7 +14,7 @@ pub trait StashRepository {
     async fn save(&self, stash: &Stash) -> Result<()>;
 }
 
-#[derive(Builder, Default)]
+#[derive(Builder, Default, Debug)]
 #[builder(setter(into))]
 pub struct FindManyLedgerQuery {
     pub user_id: Option<Pid>,

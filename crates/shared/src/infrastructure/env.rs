@@ -1,7 +1,4 @@
-use di::injectable;
-use serde::Deserialize;
-
-enum Environment {
+pub enum Environment {
     Development,
     Production,
     Test,
@@ -45,35 +42,4 @@ impl TryFrom<String> for Environment {
             )),
         }
     }
-}
-
-#[derive(Clone, Debug, Default, Deserialize)]
-pub struct JWTConfig {
-    pub secret: String,
-}
-
-#[injectable]
-#[derive(Clone, Debug, Default, Deserialize)]
-pub struct Config {
-    pub jwt: JWTConfig,
-}
-
-pub fn get_config() -> Result<Config, config::ConfigError> {
-    let base_path = std::env::current_dir().expect("Failed to determine the current directory");
-    let config_dir = base_path.join("config");
-
-    let environment: Environment = std::env::var("APP_ENVIRONMENT")
-        .ok()
-        .and_then(|v| v.try_into().ok())
-        .unwrap_or_else(Environment::detect);
-
-    let environment_filename = format!("{}.yaml", environment.as_str());
-
-    // Init config reader
-    let config = config::Config::builder()
-        .add_source(config::File::from(config_dir.join(environment_filename)))
-        .add_source(config::Environment::with_prefix("APP").prefix_separator("_").separator("__"))
-        .build()?;
-
-    config.try_deserialize::<Config>()
 }

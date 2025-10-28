@@ -39,6 +39,10 @@ impl Stash {
         &self.pid
     }
 
+    pub fn get_name(&self) -> &StashName {
+        &self.name
+    }
+
     pub fn get_user_id(&self) -> &Pid {
         &self.user_id
     }

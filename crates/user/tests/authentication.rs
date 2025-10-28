@@ -1,8 +1,10 @@
-use crate::common::{
-    bootstrap::bootstrap, insta_filters::redactions::cleanup_model_generics, prepare::prepare_authenticated_user, string_utils::extract_otp,
-};
+use crate::common::{bootstrap::bootstrap, prepare::prepare_authenticated_user, string_utils::extract_otp};
 use insta::{assert_debug_snapshot, with_settings};
-use shared::infrastructure::{mailing::Mailer, types::Result};
+use shared::{
+    configure_insta,
+    infrastructure::{mailing::Mailer, types::Result},
+    testing::insta_filters::redactions::cleanup_model_generics,
+};
 use std::{str::FromStr, sync::Arc};
 use user::{
     application::{auth::AuthenticationService, user::UserManagementService},

@@ -3627,6 +3627,7 @@ dependencies = [
  "alloy",
  "async-trait",
  "chrono",
+ "config",
  "more-di",
  "serde",
  "thiserror",
@@ -4219,7 +4220,6 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "chrono",
- "config",
  "derive_builder",
  "email_address",
  "insta",

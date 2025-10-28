@@ -12,3 +12,7 @@ async-trait = { workspace = true }
 alloy = "1.0.41"
 more-di = { workspace = true }
 tokio = { workspace = true }
+config = { workspace = true }
+
+[features]
+testing = []
