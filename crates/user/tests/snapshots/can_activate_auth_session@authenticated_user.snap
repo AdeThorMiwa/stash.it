@@ -1,0 +1,17 @@
+---
+source: crates/user/tests/authentication.rs
+expression: user
+---
+User {
+    pid: Pid(
+        PID,
+    ),
+    email: EmailAddress(
+        EmailAddress(
+            "test@stash.it",
+        ),
+    ),
+    status: PendingProfile,
+    created_at: DATEZ,
+    last_login_at: DATEZ,
+}

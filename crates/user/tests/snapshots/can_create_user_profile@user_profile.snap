@@ -1,0 +1,18 @@
+---
+source: crates/user/tests/user.rs
+expression: profile
+---
+Profile {
+    pid: Pid(
+        PID,
+    ),
+    user_id: Pid(
+        PID,
+    ),
+    display_name: DisplayName(
+        "testuser",
+    ),
+    wallet_address: WalletAddress(
+        "0x52471a768b76B8cC647f2F28198cB0E44C38C2cF",
+    ),
+}
