@@ -27,4 +27,9 @@ impl SessionManagementService {
         session.expire();
         self.session_repo.save(&session).await
     }
+
+    pub async fn activate_session(&self, session: &mut Session) -> Result<()> {
+        session.activate();
+        self.session_repo.save(&session).await
+    }
 }

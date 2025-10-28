@@ -3,7 +3,7 @@ use insta::{assert_debug_snapshot, with_settings};
 use shared::{domain::value_objects::wallet_address::WalletAddress, infrastructure::types::Result};
 use std::{str::FromStr, sync::Arc};
 use user::{
-    application::user_management::{UserManagementService, command::CreateUserProfileCommand},
+    application::user::{UserManagementService, command::CreateUserProfileCommand},
     domain::value_objects::display_name::DisplayName,
 };
 
@@ -15,7 +15,7 @@ async fn can_create_user_profile() -> Result<()> {
     configure_insta!();
     let provider = bootstrap();
     let user_service: Arc<UserManagementService> = provider.get_required();
-    let pid = prepare_authenticated_user(&provider).await?;
+    let (pid, ..) = prepare_authenticated_user(&provider).await?;
     let create_profile_command = CreateUserProfileCommand {
         user_id: pid.clone(),
         display_name: DisplayName::from_str("testuser").unwrap(),

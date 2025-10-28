@@ -7,6 +7,7 @@ pub struct Session {
     pid: Pid,
     user_id: Pid,
     code: OtpCode,
+    activated: bool,
     expires_at: Date,
 }
 
@@ -17,6 +18,7 @@ impl Session {
             pid,
             user_id: user_id.clone(),
             code: OtpCode::six_digit(),
+            activated: false,
             expires_at: Self::expiry(),
         }
     }
@@ -41,11 +43,19 @@ impl Session {
         self.expires_at.le(&Utc::now())
     }
 
+    pub fn activated(&self) -> bool {
+        self.activated
+    }
+
     pub fn is_valid_code(&self, code: &str) -> bool {
         self.code.to_string() == code.to_owned()
     }
 
     pub fn expire(&mut self) {
         self.expires_at = Utc::now() - TimeDelta::minutes(10)
+    }
+
+    pub fn activate(&mut self) {
+        self.activated = true;
     }
 }

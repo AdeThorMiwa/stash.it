@@ -1,4 +1,4 @@
-pub mod authentication;
+pub mod auth;
 pub mod mailing;
-pub mod session_management;
-pub mod user_management;
+pub mod session;
+pub mod user;

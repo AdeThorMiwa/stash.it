@@ -5,14 +5,14 @@ use insta::{assert_debug_snapshot, with_settings};
 use shared::infrastructure::{mailing::Mailer, types::Result};
 use std::{str::FromStr, sync::Arc};
 use user::{
-    application::{authentication::AuthenticationService, user_management::UserManagementService},
+    application::{auth::AuthenticationService, user::UserManagementService},
     domain::value_objects::email::EmailAddress,
 };
 
 mod common;
 
 #[tokio::test]
-async fn can_request_authentication_code() -> Result<()> {
+async fn can_create_auth_session() -> Result<()> {
     // Arrange
     configure_insta!();
     let provider = bootstrap();
@@ -21,7 +21,7 @@ async fn can_request_authentication_code() -> Result<()> {
     let email = EmailAddress::from_str("tom@stash.it").unwrap();
 
     // Act
-    let result = authentication_service.request_authentication_code(&email).await;
+    let result = authentication_service.create_new_session(&email).await;
     let deliveries = mailer.deliveries().await;
     let code = extract_otp(&deliveries.messages.first().unwrap()).unwrap();
 
@@ -33,12 +33,12 @@ async fn can_request_authentication_code() -> Result<()> {
 }
 
 #[tokio::test]
-async fn can_authenticate() -> Result<()> {
+async fn can_activate_auth_session() -> Result<()> {
     // Arrange
     configure_insta!();
     let provider = bootstrap();
 
-    let pid = prepare_authenticated_user(&provider).await?;
+    let (pid, ..) = prepare_authenticated_user(&provider).await?;
 
     let user_service: Arc<UserManagementService> = provider.get_required();
     let user = user_service.get_user_by_pid(&pid).await?.unwrap();
@@ -49,6 +49,27 @@ async fn can_authenticate() -> Result<()> {
     }, {
         assert_debug_snapshot!(user);
     });
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn can_terminate_auth_session() -> Result<()> {
+    // Arrange
+    configure_insta!();
+    let provider = bootstrap();
+    let authentication_service: Arc<AuthenticationService> = provider.get_required();
+
+    let (_, session_id) = prepare_authenticated_user(&provider).await?;
+
+    let is_valid_session = authentication_service.is_valid_session(&session_id).await?;
+
+    assert_eq!(is_valid_session, true);
+
+    authentication_service.terminate_session(&session_id).await?;
+    let is_valid_session = authentication_service.is_valid_session(&session_id).await?;
+
+    assert_eq!(is_valid_session, false);
 
     Ok(())
 }
