@@ -1,0 +1,25 @@
+---
+source: crates/stash/tests/stash.rs
+expression: stash
+---
+Stash {
+    pid: Pid(
+        PID,
+    ),
+    user_id: Pid(
+        PID,
+    ),
+    name: StashName(
+        "General",
+    ),
+    status: ACTIVE,
+    tags: [
+        Tag(
+            "personal",
+        ),
+    ],
+    balances: [],
+    metadata: {},
+    created_at: DATEZ,
+    updated_at: DATEZ,
+}

@@ -1,7 +1,7 @@
-use crate::domain::stash::{balance::StashBalance, name::StashName, status::StashStatus, tag::Tag};
+use crate::domain::stash::{name::StashName, status::StashStatus, tag::Tag};
 use chrono::Utc;
 use serde_json::Value;
-use shared::domain::value_objects::{asset::Asset, date::Date, mula::Mula, pid::Pid};
+use shared::domain::value_objects::{date::Date, mula::Mula, pid::Pid};
 use std::collections::HashMap;
 
 pub type StashMetadata = HashMap<String, Value>;
@@ -13,7 +13,7 @@ pub struct Stash {
     name: StashName,
     status: StashStatus,
     tags: Vec<Tag>,
-    balances: Vec<StashBalance>,
+    balances: Vec<Mula>,
     metadata: StashMetadata,
     #[allow(dead_code)]
     created_at: Date,
@@ -55,7 +55,7 @@ impl Stash {
         &self.tags
     }
 
-    pub fn get_balances(&self) -> &Vec<StashBalance> {
+    pub fn get_balances(&self) -> &Vec<Mula> {
         &self.balances
     }
 
@@ -73,18 +73,12 @@ impl Stash {
         self.updated_at = Utc::now();
     }
 
-    pub fn update_balance(&mut self, asset: &Asset, new_balance: &Mula) {
-        self.balances = self
-            .balances
-            .iter_mut()
-            .map(|balance| {
-                if balance.get_asset().eq(asset) {
-                    balance.update_amount(new_balance);
-                }
-
-                balance.clone()
-            })
-            .collect();
+    pub fn update_balance(&mut self, new_balance: &Mula) {
+        if let Some(balance) = self.balances.iter_mut().find(|b| b.get_asset().eq(new_balance.get_asset())) {
+            *balance = new_balance.clone();
+        } else {
+            self.balances.push(new_balance.clone());
+        }
         self.updated_at = Utc::now();
     }
 }

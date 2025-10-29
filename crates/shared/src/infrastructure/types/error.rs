@@ -11,4 +11,5 @@ pub enum Error {
     ServiceError,
     AssertError(String),
     BuilderError(String),
+    ParseError,
 }

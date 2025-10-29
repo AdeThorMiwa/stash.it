@@ -1,0 +1,29 @@
+---
+source: crates/stash/tests/ledger.rs
+expression: entry
+---
+LedgerEntry {
+    pid: Pid(
+        PID,
+    ),
+    stash_id: Pid(
+        PID,
+    ),
+    entry_type: CREDIT,
+    amount: Mula {
+        amount: 10,
+        asset: Asset {
+            name: "USD Tether",
+            symbol: "USDT",
+            network: "ethereum",
+            address: None,
+            decimals: 18,
+            display_decimals: 10,
+        },
+    },
+    upstream_ref_id: Pid(
+        PID,
+    ),
+    metadata: {},
+    created_at: DATEZ,
+}

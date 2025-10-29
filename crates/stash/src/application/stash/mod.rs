@@ -1,5 +1,5 @@
 use crate::{
-    application::stash::command::{CreateStashCommand, UpdateStashBalanceCommand, UpdateStashStatusCommand},
+    application::stash::command::{CreateStashCommand, GetStashCommand, UpdateStashBalanceCommand, UpdateStashStatusCommand},
     domain::{
         events::{StashBalanceUpdatedEvent, StashCreatedEvent, StashStatusUpdatedEvent},
         repositories::StashRepository,
@@ -25,6 +25,10 @@ pub struct StashService {
 }
 
 impl StashService {
+    pub async fn get_stash(&self, command: GetStashCommand) -> Result<Option<Stash>> {
+        self.stash_repo.find_by_pid(&command.stash_id).await
+    }
+
     pub async fn create_stash(&self, command: CreateStashCommand) -> Result<Stash> {
         self.assert_can_create_stash(&command).await?;
         let stash = Stash::new(&command.user_id, &command.name, &command.tags);
@@ -34,7 +38,7 @@ impl StashService {
         Ok(stash)
     }
 
-    pub async fn update_stash_status(&self, command: UpdateStashStatusCommand) -> Result<()> {
+    pub async fn update_stash_status(&self, command: UpdateStashStatusCommand) -> Result<Stash> {
         let mut stash = self
             .stash_repo
             .find_by_pid(&command.stash_id)
@@ -45,21 +49,21 @@ impl StashService {
         self.stash_repo.save(&stash).await?;
         let stash_status_updated_event = StashStatusUpdatedEvent::new(stash.get_pid(), stash.get_status());
         self.event_bus.publish(stash_status_updated_event).await?;
-        Ok(())
+        Ok(stash)
     }
 
-    pub async fn update_stash_balance(&self, command: UpdateStashBalanceCommand) -> Result<()> {
+    pub async fn update_stash_balance(&self, command: UpdateStashBalanceCommand) -> Result<Stash> {
         let mut stash = self
             .stash_repo
             .find_by_pid(&command.stash_id)
             .await?
             .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
 
-        stash.update_balance(&command.asset, &command.new_balance);
+        stash.update_balance(&command.new_balance);
         self.stash_repo.save(&stash).await?;
-        let stash_balance_updated_event = StashBalanceUpdatedEvent::new(stash.get_pid(), &command.asset, &command.new_balance);
+        let stash_balance_updated_event = StashBalanceUpdatedEvent::new(stash.get_pid(), &command.new_balance);
         self.event_bus.publish(stash_balance_updated_event).await?;
-        Ok(())
+        Ok(stash)
     }
 
     async fn assert_can_create_stash(&self, command: &CreateStashCommand) -> Result<()> {

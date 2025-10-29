@@ -1,6 +1,6 @@
 use chrono::Utc;
 use shared::{
-    domain::value_objects::{asset::Asset, date::Date, mula::Mula, pid::Pid},
+    domain::value_objects::{date::Date, mula::Mula, pid::Pid},
     infrastructure::messaging::event::DomainEvent,
 };
 
@@ -71,16 +71,14 @@ impl DomainEvent for StashStatusUpdatedEvent {
 #[derive(Debug)]
 pub struct StashBalanceUpdatedEvent {
     stash_id: Pid,
-    asset: Asset,
     new_balance: Mula,
     created_at: Date,
 }
 
 impl StashBalanceUpdatedEvent {
-    pub fn new(stash_id: &Pid, asset: &Asset, new_balance: &Mula) -> Box<Self> {
+    pub fn new(stash_id: &Pid, new_balance: &Mula) -> Box<Self> {
         Box::new(Self {
             stash_id: stash_id.to_owned(),
-            asset: asset.to_owned(),
             new_balance: new_balance.to_owned(),
             created_at: Utc::now(),
         })

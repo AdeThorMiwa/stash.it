@@ -1,5 +1,5 @@
 use crate::{
-    application::ledger::command::{CreateLedgerEntryCommand, GetLedgerEntriesCommand, GetLedgerEntryCommand},
+    application::ledger::command::{ReadLedgerEntriesCommand, ReadLedgerEntryCommand, WriteLedgerEntryCommand},
     domain::{
         events::LedgerEntryCreatedEvent,
         ledger_entry::entry::LedgerEntry,
@@ -22,14 +22,8 @@ pub struct LedgerService {
 }
 
 impl LedgerService {
-    pub async fn create_ledger_entry(&self, command: CreateLedgerEntryCommand) -> Result<LedgerEntry> {
-        let entry = LedgerEntry::new(
-            &command.stash_id,
-            &command.entry_type,
-            &command.amount,
-            &command.asset,
-            &command.upstream_ref_id,
-        );
+    pub async fn write_ledger_entry(&self, command: WriteLedgerEntryCommand) -> Result<LedgerEntry> {
+        let entry = LedgerEntry::new(&command.stash_id, &command.entry_type, &command.amount, &command.upstream_ref_id);
 
         self.ledger_repo.save(&entry).await?;
         let ledger_entry_created_event = LedgerEntryCreatedEvent::new(entry.get_stash_id(), entry.get_pid());
@@ -37,7 +31,7 @@ impl LedgerService {
         Ok(entry)
     }
 
-    pub async fn get_ledger_entries(&self, command: GetLedgerEntriesCommand) -> Result<Vec<LedgerEntry>> {
+    pub async fn read_ledger_entries(&self, command: ReadLedgerEntriesCommand) -> Result<Vec<LedgerEntry>> {
         let query = FindManyLedgerQueryBuilder::default()
             .user_id(command.user_id)
             .limit(command.limit.unwrap_or(20))
@@ -48,7 +42,7 @@ impl LedgerService {
         Ok(self.ledger_repo.find_many(query).await?)
     }
 
-    pub async fn get_ledger_entry(&self, command: GetLedgerEntryCommand) -> Result<Option<LedgerEntry>> {
+    pub async fn read_ledger_entry(&self, command: ReadLedgerEntryCommand) -> Result<Option<LedgerEntry>> {
         self.ledger_repo.find_by_pid(&command.entry_id).await
     }
 }
