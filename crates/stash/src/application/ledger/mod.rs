@@ -34,6 +34,7 @@ impl LedgerService {
     pub async fn read_ledger_entries(&self, command: ReadLedgerEntriesCommand) -> Result<Vec<LedgerEntry>> {
         let query = FindManyLedgerQueryBuilder::default()
             .user_id(command.user_id)
+            .entry_type(command.entry_type)
             .limit(command.limit.unwrap_or(20))
             .page(command.page)
             .build()

@@ -14,6 +14,7 @@ pub struct ReadLedgerEntryCommand {
 
 pub struct ReadLedgerEntriesCommand {
     pub user_id: Option<Pid>,
+    pub entry_type: Option<LedgerEntryType>,
     pub page: u16,
     pub limit: Option<u16>,
 }

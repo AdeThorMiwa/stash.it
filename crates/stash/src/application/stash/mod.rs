@@ -1,8 +1,8 @@
 use crate::{
-    application::stash::command::{CreateStashCommand, GetStashCommand, UpdateStashBalanceCommand, UpdateStashStatusCommand},
+    application::stash::command::{CreateStashCommand, GetStashCommand, GetStashesCommand, UpdateStashBalanceCommand, UpdateStashStatusCommand},
     domain::{
         events::{StashBalanceUpdatedEvent, StashCreatedEvent, StashStatusUpdatedEvent},
-        repositories::StashRepository,
+        repositories::{FindManyStashQueryBuilder, StashRepository},
         stash::stash::Stash,
     },
 };
@@ -27,6 +27,17 @@ pub struct StashService {
 impl StashService {
     pub async fn get_stash(&self, command: GetStashCommand) -> Result<Option<Stash>> {
         self.stash_repo.find_by_pid(&command.stash_id).await
+    }
+
+    pub async fn get_stashes(&self, command: GetStashesCommand) -> Result<Vec<Stash>> {
+        let query = FindManyStashQueryBuilder::default()
+            .user_id(command.user_id)
+            .limit(command.limit.unwrap_or(20))
+            .page(command.page)
+            .build()
+            .map_err(|e| Error::BuilderError(e.to_string()))?;
+
+        self.stash_repo.find_many(query).await
     }
 
     pub async fn create_stash(&self, command: CreateStashCommand) -> Result<Stash> {

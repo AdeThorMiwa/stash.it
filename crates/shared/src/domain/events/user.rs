@@ -1,6 +1,7 @@
 use chrono::Utc;
-use shared::{
-    domain::value_objects::{date::Date, pid::Pid},
+
+use crate::{
+    domain::value_objects::{date::Date, pid::Pid, user_status::UserStatus},
     infrastructure::messaging::event::DomainEvent,
 };
 
@@ -68,7 +69,7 @@ impl DomainEvent for ProfileCreatedEvent {
 #[derive(Debug)]
 pub struct SessionActivatedEvent {
     user_id: Pid,
-    session_id: Pid,
+    pub session_id: Pid,
     created_at: Date,
 }
 
@@ -99,7 +100,7 @@ impl DomainEvent for SessionActivatedEvent {
 #[derive(Debug)]
 pub struct SessionTerminatedEvent {
     user_id: Pid,
-    session_id: Pid,
+    pub session_id: Pid,
     created_at: Date,
 }
 
@@ -116,6 +117,39 @@ impl SessionTerminatedEvent {
 impl DomainEvent for SessionTerminatedEvent {
     fn event_type(&self) -> &str {
         "SessionTerminated"
+    }
+
+    fn aggregate_id(&self) -> Pid {
+        self.user_id.clone()
+    }
+
+    fn occurred_at(&self) -> Date {
+        self.created_at.clone()
+    }
+}
+
+#[derive(Debug)]
+pub struct UserStatusUpdatedEvent {
+    pub user_id: Pid,
+    pub old_status: UserStatus,
+    pub new_status: UserStatus,
+    pub created_at: Date,
+}
+
+impl UserStatusUpdatedEvent {
+    pub fn new(user_id: &Pid, old_status: &UserStatus, new_status: &UserStatus) -> Box<Self> {
+        Box::new(Self {
+            user_id: user_id.to_owned(),
+            old_status: old_status.to_owned(),
+            new_status: new_status.to_owned(),
+            created_at: Utc::now(),
+        })
+    }
+}
+
+impl DomainEvent for UserStatusUpdatedEvent {
+    fn event_type(&self) -> &str {
+        "UserStatusUpdated"
     }
 
     fn aggregate_id(&self) -> Pid {

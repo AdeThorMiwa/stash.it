@@ -11,6 +11,12 @@ pub struct GetStashCommand {
     pub stash_id: Pid,
 }
 
+pub struct GetStashesCommand {
+    pub user_id: Option<Pid>,
+    pub page: u16,
+    pub limit: Option<u16>,
+}
+
 pub struct UpdateStashStatusCommand {
     pub stash_id: Pid,
     pub new_status: StashStatus,

@@ -3,7 +3,7 @@ use di::injectable;
 use shared::{domain::value_objects::pid::Pid, infrastructure::types::Result};
 use stash::domain::{
     ledger_entry::entry::LedgerEntry,
-    repositories::{FindManyLedgerQuery, LedgerRepository, StashRepository},
+    repositories::{FindManyLedgerQuery, FindManyStashQuery, LedgerRepository, StashRepository},
     stash::{name::StashName, stash::Stash},
 };
 use tokio::sync::Mutex;
@@ -19,6 +19,11 @@ impl StashRepository for StubStashRepository {
         let stashes = self.stashes.lock().await;
         let stash = stashes.iter().find(|s| s.get_pid() == pid).map(|s| s.clone());
         Ok(stash)
+    }
+
+    async fn find_many(&self, _query: FindManyStashQuery) -> Result<Vec<Stash>> {
+        let stashes = self.stashes.lock().await;
+        Ok(stashes.clone())
     }
 
     async fn exists_with_name_for_user(&self, user_id: &Pid, name: &StashName) -> Result<bool> {

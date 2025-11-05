@@ -1,14 +1,14 @@
 use crate::{
     application::{mailing::MailingService, session::SessionManagementService, user::UserManagementService},
-    domain::{
-        events::{SessionActivatedEvent, SessionTerminatedEvent},
-        value_objects::email::EmailAddress,
-    },
+    domain::value_objects::email::EmailAddress,
     infrastructure::auth::jwt_service::JWTService,
 };
 use di::injectable;
 use shared::{
-    domain::value_objects::pid::Pid,
+    domain::{
+        events::user::{SessionActivatedEvent, SessionTerminatedEvent},
+        value_objects::pid::Pid,
+    },
     infrastructure::{
         messaging::EventBus,
         types::{

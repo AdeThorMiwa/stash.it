@@ -13,6 +13,7 @@ alloy = "1.0.41"
 more-di = { workspace = true }
 tokio = { workspace = true }
 config = { workspace = true }
+serde_json = { workspace = true }
 
 [features]
 testing = []

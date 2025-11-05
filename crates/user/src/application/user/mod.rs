@@ -1,16 +1,18 @@
 use crate::{
-    application::user::command::CreateUserProfileCommand,
+    application::user::command::{CreateUserProfileCommand, UpdateUserStatusCommand},
     domain::{
         aggregates::user::User,
         entities::profile::Profile,
-        events::{ProfileCreatedEvent, UserCreatedEvent},
         repositories::{ProfileRepository, UserRepository},
-        value_objects::{email::EmailAddress, user_status::UserStatus},
+        value_objects::email::EmailAddress,
     },
 };
 use di::injectable;
 use shared::{
-    domain::value_objects::pid::Pid,
+    domain::{
+        events::user::{ProfileCreatedEvent, UserCreatedEvent, UserStatusUpdatedEvent},
+        value_objects::pid::Pid,
+    },
     infrastructure::{
         messaging::EventBus,
         types::{
@@ -48,14 +50,20 @@ impl UserManagementService {
     }
 
     // @todo make pub(crate)
-    pub async fn update_user_status(&self, user_id: &Pid, new_status: UserStatus) -> Result<User> {
-        if let Some(mut user) = self.user_repo.find_by_pid(user_id).await? {
-            user.update_status(new_status);
-            self.user_repo.save(&user).await?;
-            return Ok(user);
-        }
+    pub async fn update_user_status(&self, command: UpdateUserStatusCommand) -> Result<User> {
+        let mut user = self
+            .user_repo
+            .find_by_pid(&command.user_id)
+            .await?
+            .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
 
-        Err(Error::DomainError(DomainError::EntityNotFound))
+        let old_status = user.get_status().clone();
+        user.update_status(&command.new_status);
+        self.user_repo.save(&user).await?;
+
+        let user_status_updated_event = UserStatusUpdatedEvent::new(user.get_pid(), &old_status, user.get_status());
+        self.event_bus.publish(user_status_updated_event).await?;
+        return Ok(user);
     }
 
     pub(crate) async fn update_user_last_login(&self, user_id: &Pid) -> Result<User> {

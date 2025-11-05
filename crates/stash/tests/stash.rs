@@ -22,7 +22,7 @@ mod utils;
 async fn can_create_stash() -> Result<()> {
     // Arrange
     configure_insta!();
-    let provider = bootstrap();
+    let provider = bootstrap().await;
     let stash_service = provider.get_required::<StashService>();
     let command = CreateStashCommand {
         name: StashName::from_str("General").unwrap(),
@@ -46,7 +46,7 @@ async fn can_create_stash() -> Result<()> {
 #[tokio::test]
 async fn can_update_stash_status() -> Result<()> {
     // Arrange
-    let provider = bootstrap();
+    let provider = bootstrap().await;
     let stash_service = provider.get_required::<StashService>();
     let stash = prepare_stash(&provider).await?;
     let command = UpdateStashStatusCommand {
@@ -67,7 +67,7 @@ async fn can_update_stash_status() -> Result<()> {
 #[cfg(feature = "testing")]
 async fn can_update_stash_balance() -> Result<()> {
     // Arrange
-    let provider = bootstrap();
+    let provider = bootstrap().await;
     let stash_service = provider.get_required::<StashService>();
     let stash = prepare_stash(&provider).await?;
     let new_balance = Mula::new(10, &Asset::usdt());
