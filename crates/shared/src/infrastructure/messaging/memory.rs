@@ -24,6 +24,7 @@ impl EventBus for InMemoryEventBus {
         Ok(())
     }
 
+    #[cfg(feature = "testing")]
     async fn published(&self, event: Box<dyn DomainEvent>) -> bool {
         let published_events = self.published_events.lock().await;
         published_events.iter().find(|e| e.event_type() == event.event_type()).is_some()
