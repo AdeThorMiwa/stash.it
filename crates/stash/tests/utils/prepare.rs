@@ -7,6 +7,7 @@ use stash::{
     domain::stash::{name::StashName, stash::Stash, tag::Tag},
 };
 
+#[allow(dead_code)]
 pub async fn prepare_stash(provider: &ServiceProvider) -> Result<Stash> {
     let stash_service = provider.get_required::<StashService>();
     let command = CreateStashCommand {
