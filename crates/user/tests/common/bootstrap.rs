@@ -4,14 +4,10 @@ use std::sync::Arc;
 
 use user::{
     application::{auth::AuthenticationService, mailing::MailingService, session::SessionManagementService, user::UserManagementService},
-    infrastructure::{
-        auth::jwt_service::JWTService,
-        config::Config,
-        persistence::{
-            profile_repository::PostgresProfileRepository, session_repository::PostgresSessionRepository, user_repository::PostgresUserRepository,
-        },
-    },
+    infrastructure::{auth::jwt_service::JWTService, config::Config},
 };
+
+use crate::common::repositories::{StubProfileRepository, StubSessionRepository, StubUserRepository};
 
 pub fn bootstrap() -> ServiceProvider {
     let config = Arc::new(get_config::<Config>().unwrap());
@@ -23,9 +19,9 @@ pub fn bootstrap() -> ServiceProvider {
         .add(SessionManagementService::singleton())
         .add(UserManagementService::singleton())
         .add(JWTService::singleton())
-        .add(PostgresUserRepository::singleton())
-        .add(PostgresSessionRepository::singleton())
-        .add(PostgresProfileRepository::singleton())
+        .add(StubUserRepository::singleton())
+        .add(StubSessionRepository::singleton())
+        .add(StubProfileRepository::singleton())
         .add(InMemoryEventBus::singleton())
         .add(StubMailer::singleton())
         .build_provider()
