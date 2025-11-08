@@ -2,7 +2,7 @@ use crate::common::{bootstrap::bootstrap, prepare::prepare_authenticated_user, s
 use insta::{assert_debug_snapshot, with_settings};
 use shared::{
     configure_insta,
-    domain::events::user::{SessionActivatedEvent, SessionTerminatedEvent, UserCreatedEvent},
+    domain::events::user::{SessionActivated, SessionTerminated, UserCreated},
     infrastructure::{mailing::Mailer, messaging::EventBus, types::Result},
     testing::insta_filters::redactions::cleanup_model_generics,
 };
@@ -47,8 +47,8 @@ async fn can_activate_auth_session() -> Result<()> {
     let user = user_service.get_user_by_pid(&pid).await?.unwrap();
 
     // Assert
-    assert!(event_bus.published(SessionActivatedEvent::new(user.get_pid(), &session_id)).await);
-    assert!(event_bus.published(UserCreatedEvent::new(user.get_pid())).await);
+    assert!(event_bus.published(SessionActivated::new(user.get_pid(), &session_id)).await);
+    assert!(event_bus.published(UserCreated::new(user.get_pid())).await);
 
     with_settings!({
         filters => cleanup_model_generics(),
@@ -78,7 +78,7 @@ async fn can_terminate_auth_session() -> Result<()> {
     let is_valid_session = authentication_service.is_valid_session(&session_id).await?;
 
     assert_eq!(is_valid_session, false);
-    assert!(event_bus.published(SessionTerminatedEvent::new(&user_id, &session_id)).await);
+    assert!(event_bus.published(SessionTerminated::new(&user_id, &session_id)).await);
 
     Ok(())
 }

@@ -26,7 +26,7 @@ async fn can_create_stash() -> Result<()> {
     let stash_service = provider.get_required::<StashService>();
     let command = CreateStashCommand {
         name: StashName::from_str("General").unwrap(),
-        user_id: Pid::new(),
+        owner_id: Pid::new(),
         tags: vec![Tag::from_str("personal").unwrap()],
     };
 

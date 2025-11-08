@@ -26,9 +26,9 @@ impl StashRepository for StubStashRepository {
         Ok(stashes.clone())
     }
 
-    async fn exists_with_name_for_user(&self, user_id: &Pid, name: &StashName) -> Result<bool> {
+    async fn exists_with_name_for_owner(&self, owner_id: &Pid, name: &StashName) -> Result<bool> {
         let stashes = self.stashes.lock().await;
-        let stash = stashes.iter().find(|s| s.get_user_id() == user_id && s.get_name() == name);
+        let stash = stashes.iter().find(|s| s.get_owner_id() == owner_id && s.get_name() == name);
         Ok(stash.is_some())
     }
 

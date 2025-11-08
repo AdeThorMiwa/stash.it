@@ -8,7 +8,7 @@ use shared::{
 };
 use stash::{
     application::ledger::{LedgerService, command::WriteLedgerEntryCommand},
-    domain::{events::LedgerEntryCreatedEvent, ledger_entry::entry_type::LedgerEntryType},
+    domain::{events::LedgerEntryCreated, ledger_entry::entry_type::LedgerEntryType},
 };
 
 mod utils;
@@ -38,7 +38,7 @@ async fn can_write_ledger_entry() -> Result<()> {
     assert_eq!(entry.get_type(), &LedgerEntryType::CREDIT, "entry type must be `CREDIT`");
     assert_eq!(entry.get_amount(), &amount, "amount must match");
     assert_eq!(entry.get_upstream_ref_id(), &upstream_ref_id, "upstream_ref_id must match");
-    let write_event = LedgerEntryCreatedEvent::new(entry.get_stash_id(), entry.get_pid());
+    let write_event = LedgerEntryCreated::new(entry.get_stash_id(), entry.get_pid());
     assert!(event_bus.published(write_event).await);
 
     with_settings!({

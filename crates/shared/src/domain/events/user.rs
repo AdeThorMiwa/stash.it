@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::Utc;
 
 use crate::{
@@ -6,21 +8,21 @@ use crate::{
 };
 
 #[derive(Debug)]
-pub struct UserCreatedEvent {
+pub struct UserCreated {
     user_id: Pid,
     created_at: Date,
 }
 
-impl UserCreatedEvent {
-    pub fn new(user_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+impl UserCreated {
+    pub fn new(user_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             user_id: user_id.to_owned(),
             created_at: Utc::now(),
         })
     }
 }
 
-impl DomainEvent for UserCreatedEvent {
+impl DomainEvent for UserCreated {
     fn event_type(&self) -> &str {
         "UserCreated"
     }
@@ -35,16 +37,16 @@ impl DomainEvent for UserCreatedEvent {
 }
 
 #[derive(Debug)]
-pub struct ProfileCreatedEvent {
+pub struct ProfileCreated {
     user_id: Pid,
     #[allow(dead_code)]
     profile_id: Pid,
     created_at: Date,
 }
 
-impl ProfileCreatedEvent {
-    pub fn new(user_id: &Pid, profile_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+impl ProfileCreated {
+    pub fn new(user_id: &Pid, profile_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             user_id: user_id.to_owned(),
             profile_id: profile_id.to_owned(),
             created_at: Utc::now(),
@@ -52,7 +54,7 @@ impl ProfileCreatedEvent {
     }
 }
 
-impl DomainEvent for ProfileCreatedEvent {
+impl DomainEvent for ProfileCreated {
     fn event_type(&self) -> &str {
         "ProfileCreated"
     }
@@ -67,15 +69,15 @@ impl DomainEvent for ProfileCreatedEvent {
 }
 
 #[derive(Debug)]
-pub struct SessionActivatedEvent {
+pub struct SessionActivated {
     user_id: Pid,
     pub session_id: Pid,
     created_at: Date,
 }
 
-impl SessionActivatedEvent {
-    pub fn new(user_id: &Pid, session_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+impl SessionActivated {
+    pub fn new(user_id: &Pid, session_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             user_id: user_id.to_owned(),
             session_id: session_id.to_owned(),
             created_at: Utc::now(),
@@ -83,7 +85,7 @@ impl SessionActivatedEvent {
     }
 }
 
-impl DomainEvent for SessionActivatedEvent {
+impl DomainEvent for SessionActivated {
     fn event_type(&self) -> &str {
         "SessionActivated"
     }
@@ -98,15 +100,15 @@ impl DomainEvent for SessionActivatedEvent {
 }
 
 #[derive(Debug)]
-pub struct SessionTerminatedEvent {
+pub struct SessionTerminated {
     user_id: Pid,
     pub session_id: Pid,
     created_at: Date,
 }
 
-impl SessionTerminatedEvent {
-    pub fn new(user_id: &Pid, session_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+impl SessionTerminated {
+    pub fn new(user_id: &Pid, session_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             user_id: user_id.to_owned(),
             session_id: session_id.to_owned(),
             created_at: Utc::now(),
@@ -114,7 +116,7 @@ impl SessionTerminatedEvent {
     }
 }
 
-impl DomainEvent for SessionTerminatedEvent {
+impl DomainEvent for SessionTerminated {
     fn event_type(&self) -> &str {
         "SessionTerminated"
     }
@@ -129,16 +131,16 @@ impl DomainEvent for SessionTerminatedEvent {
 }
 
 #[derive(Debug)]
-pub struct UserStatusUpdatedEvent {
+pub struct UserStatusUpdated {
     pub user_id: Pid,
     pub old_status: UserStatus,
     pub new_status: UserStatus,
     pub created_at: Date,
 }
 
-impl UserStatusUpdatedEvent {
-    pub fn new(user_id: &Pid, old_status: &UserStatus, new_status: &UserStatus) -> Box<Self> {
-        Box::new(Self {
+impl UserStatusUpdated {
+    pub fn new(user_id: &Pid, old_status: &UserStatus, new_status: &UserStatus) -> Arc<Self> {
+        Arc::new(Self {
             user_id: user_id.to_owned(),
             old_status: old_status.to_owned(),
             new_status: new_status.to_owned(),
@@ -147,7 +149,7 @@ impl UserStatusUpdatedEvent {
     }
 }
 
-impl DomainEvent for UserStatusUpdatedEvent {
+impl DomainEvent for UserStatusUpdated {
     fn event_type(&self) -> &str {
         "UserStatusUpdated"
     }

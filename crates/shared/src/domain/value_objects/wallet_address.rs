@@ -1,8 +1,8 @@
 use alloy::{hex::FromHexError, primitives::Address};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct WalletAddress(String);
 
 pub type WalletAddressError = FromHexError;

@@ -16,6 +16,8 @@ jsonwebtoken = { version = "10.0.0", features = ["aws_lc_rs"] }
 derive_builder = { workspace = true }
 tokio = { workspace = true }
 regex = { workspace = true }
+
+[dev-dependencies]
 insta = { workspace = true }
 
 [features]

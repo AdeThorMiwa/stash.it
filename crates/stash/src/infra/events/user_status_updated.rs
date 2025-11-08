@@ -3,7 +3,7 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use di::injectable;
 use shared::{
-    domain::{events::user::UserStatusUpdatedEvent, value_objects::user_status::UserStatus},
+    domain::{events::user::UserStatusUpdated, value_objects::user_status::UserStatus},
     infrastructure::{
         messaging::{
             EventHandler,
@@ -43,9 +43,9 @@ impl EventHandler for OnUserStatusUpdated {
     }
 
     async fn handle(&self, event: Box<dyn DomainEvent>) -> Result<()> {
-        let event = downcast_event::<UserStatusUpdatedEvent>(&event);
+        let event = downcast_event::<UserStatusUpdated>(&event);
         let command = GetStashesCommand {
-            user_id: Some(event.user_id.clone()),
+            owner_id: Some(event.user_id.clone()),
             limit: Some(1000), // fetch all stashes
             page: 1,
         };

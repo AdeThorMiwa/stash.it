@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/shared", "crates/macros", "crates/user", "crates/stash"]
+members = ["crates/shared", "crates/macros", "crates/user", "crates/stash", "crates/governance"]
 
 [workspace.dependencies]
 anyhow = "1.0.99"

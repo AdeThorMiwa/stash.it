@@ -1,17 +1,19 @@
 use crate::{
     application::stash::command::{CreateStashCommand, GetStashCommand, GetStashesCommand, UpdateStashBalanceCommand, UpdateStashStatusCommand},
     domain::{
-        events::{StashBalanceUpdatedEvent, StashCreatedEvent, StashStatusUpdatedEvent},
         repositories::{FindManyStashQueryBuilder, StashRepository},
         stash::stash::Stash,
     },
 };
 use di::injectable;
-use shared::infrastructure::{
-    messaging::EventBus,
-    types::{
-        Result,
-        error::{DomainError, Error},
+use shared::{
+    domain::entity::Entity,
+    infrastructure::{
+        messaging::EventBus,
+        types::{
+            Result,
+            error::{DomainError, Error},
+        },
     },
 };
 use std::sync::Arc;
@@ -31,7 +33,7 @@ impl StashService {
 
     pub async fn get_stashes(&self, command: GetStashesCommand) -> Result<Vec<Stash>> {
         let query = FindManyStashQueryBuilder::default()
-            .user_id(command.user_id)
+            .owner_id(command.owner_id)
             .limit(command.limit.unwrap_or(20))
             .page(command.page)
             .build()
@@ -42,10 +44,9 @@ impl StashService {
 
     pub async fn create_stash(&self, command: CreateStashCommand) -> Result<Stash> {
         self.assert_can_create_stash(&command).await?;
-        let stash = Stash::new(&command.user_id, &command.name, &command.tags);
+        let mut stash = Stash::new(&command.owner_id, &command.name, &command.tags);
         self.stash_repo.save(&stash).await?;
-        let stash_created_event = StashCreatedEvent::new(stash.get_pid(), stash.get_user_id());
-        self.event_bus.publish(stash_created_event).await?;
+        self.event_bus.publish_many(stash.drain_events()).await?;
         Ok(stash)
     }
 
@@ -58,8 +59,7 @@ impl StashService {
 
         stash.update_status(&command.new_status);
         self.stash_repo.save(&stash).await?;
-        let stash_status_updated_event = StashStatusUpdatedEvent::new(stash.get_pid(), stash.get_status());
-        self.event_bus.publish(stash_status_updated_event).await?;
+        self.event_bus.publish_many(stash.drain_events()).await?;
         Ok(stash)
     }
 
@@ -72,8 +72,7 @@ impl StashService {
 
         stash.update_balance(&command.new_balance);
         self.stash_repo.save(&stash).await?;
-        let stash_balance_updated_event = StashBalanceUpdatedEvent::new(stash.get_pid(), &command.new_balance);
-        self.event_bus.publish(stash_balance_updated_event).await?;
+        self.event_bus.publish_many(stash.drain_events()).await?;
         Ok(stash)
     }
 
@@ -87,8 +86,8 @@ impl StashService {
             )));
         }
 
-        if self.stash_repo.exists_with_name_for_user(&command.user_id, &command.name).await? {
-            return Err(Error::AssertError("stash with name already exist".to_string()));
+        if self.stash_repo.exists_with_name_for_owner(&command.owner_id, &command.name).await? {
+            return Err(Error::AssertError("stash with name already exist for owner".to_string()));
         }
 
         Ok(())

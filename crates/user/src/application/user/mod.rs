@@ -9,10 +9,7 @@ use crate::{
 };
 use di::injectable;
 use shared::{
-    domain::{
-        events::user::{ProfileCreatedEvent, UserCreatedEvent, UserStatusUpdatedEvent},
-        value_objects::pid::Pid,
-    },
+    domain::{entity::Entity, value_objects::pid::Pid},
     infrastructure::{
         messaging::EventBus,
         types::{
@@ -42,10 +39,9 @@ impl UserManagementService {
     }
 
     pub(crate) async fn create_user(&self, email: &EmailAddress) -> Result<User> {
-        let user = User::new(email.clone());
+        let mut user = User::new(email.clone());
         self.user_repo.save(&user).await?;
-        let user_created_event = UserCreatedEvent::new(user.get_pid());
-        self.event_bus.publish(user_created_event).await?;
+        self.event_bus.publish_many(user.drain_events()).await?;
         Ok(user)
     }
 
@@ -57,12 +53,9 @@ impl UserManagementService {
             .await?
             .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
 
-        let old_status = user.get_status().clone();
         user.update_status(&command.new_status);
         self.user_repo.save(&user).await?;
-
-        let user_status_updated_event = UserStatusUpdatedEvent::new(user.get_pid(), &old_status, user.get_status());
-        self.event_bus.publish(user_status_updated_event).await?;
+        self.event_bus.publish_many(user.drain_events()).await?;
         return Ok(user);
     }
 
@@ -87,10 +80,9 @@ impl UserManagementService {
             return Err(Error::DomainError(DomainError::EntityAlreadyExist));
         }
 
-        let profile = Profile::new(&user.get_pid(), &command.display_name, &command.wallet_address);
+        let mut profile = Profile::new(&user.get_pid(), &command.display_name, &command.wallet_address);
         self.profile_repo.save(&profile).await?;
-        let event = ProfileCreatedEvent::new(&command.user_id, profile.get_pid());
-        self.event_bus.publish(event).await?;
+        self.event_bus.publish_many(profile.drain_events()).await?;
 
         Ok(profile)
     }

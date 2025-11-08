@@ -10,7 +10,7 @@ use crate::domain::{
 #[derive(Builder, Default, Debug)]
 #[builder(setter(into))]
 pub struct FindManyStashQuery {
-    pub user_id: Option<Pid>,
+    pub owner_id: Option<Pid>,
     pub limit: u16,
     pub page: u16,
 }
@@ -19,7 +19,7 @@ pub struct FindManyStashQuery {
 pub trait StashRepository: Sync + Send {
     async fn find_by_pid(&self, pid: &Pid) -> Result<Option<Stash>>;
     async fn find_many(&self, query: FindManyStashQuery) -> Result<Vec<Stash>>;
-    async fn exists_with_name_for_user(&self, user_id: &Pid, name: &StashName) -> Result<bool>;
+    async fn exists_with_name_for_owner(&self, owner_id: &Pid, name: &StashName) -> Result<bool>;
     async fn save(&self, stash: &Stash) -> Result<()>;
 }
 

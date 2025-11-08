@@ -1,6 +1,7 @@
 use crate::domain::value_objects::wallet_address::WalletAddress;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Eq)]
+#[derive(Clone, Debug, Eq, Serialize, Deserialize)]
 pub struct Asset {
     pub name: String,
     pub symbol: String,

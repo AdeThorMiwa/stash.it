@@ -1,4 +1,6 @@
-#[derive(Debug, Clone, Eq, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum UserStatus {
     Active,
     Suspended,

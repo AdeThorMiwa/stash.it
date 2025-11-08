@@ -1,15 +1,17 @@
 use crate::{
     application::ledger::command::{ReadLedgerEntriesCommand, ReadLedgerEntryCommand, WriteLedgerEntryCommand},
     domain::{
-        events::LedgerEntryCreatedEvent,
         ledger_entry::entry::LedgerEntry,
         repositories::{FindManyLedgerQueryBuilder, LedgerRepository},
     },
 };
 use di::injectable;
-use shared::infrastructure::{
-    messaging::EventBus,
-    types::{Result, error::Error},
+use shared::{
+    domain::entity::Entity,
+    infrastructure::{
+        messaging::EventBus,
+        types::{Result, error::Error},
+    },
 };
 use std::sync::Arc;
 
@@ -23,11 +25,9 @@ pub struct LedgerService {
 
 impl LedgerService {
     pub async fn write_ledger_entry(&self, command: WriteLedgerEntryCommand) -> Result<LedgerEntry> {
-        let entry = LedgerEntry::new(&command.stash_id, &command.entry_type, &command.amount, &command.upstream_ref_id);
-
+        let mut entry = LedgerEntry::new(&command.stash_id, &command.entry_type, &command.amount, &command.upstream_ref_id);
         self.ledger_repo.save(&entry).await?;
-        let ledger_entry_created_event = LedgerEntryCreatedEvent::new(entry.get_stash_id(), entry.get_pid());
-        self.event_bus.publish(ledger_entry_created_event).await?;
+        self.event_bus.publish_many(entry.drain_events()).await?;
         Ok(entry)
     }
 

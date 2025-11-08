@@ -168,17 +168,6 @@ The Aggregate Root for the entire governance contract. It encapsulates all Rules
 - Array[GovernanceAction]   actions
 - Date                      updated_at
 
-#### GovernanceAction
-
-An Entity representing a user's intent (e.g., automated withdrawal) and the conditions (`Triggers`) under which that intent should be initiated.
-
-- int                       id
-- Uuid                      pid
-- String                    name
-- Array[Trigger]            triggers
-- Intent                    intent
-- { ACTIVE | PAUSED }       status
-
 #### PenaltyPolicy
 
 Defines the consequence (e.g., fee structure) applied when a specific `GovernanceRule` is violated. Referenced by the Rule.
@@ -189,6 +178,17 @@ Defines the consequence (e.g., fee structure) applied when a specific `Governanc
 - { PercentageForfeit | FixedAmountFine }   type
 
 ### Value Objects ^^
+
+#### GovernanceAction
+
+An Entity representing a user's intent (e.g., automated withdrawal) and the conditions (`Triggers`) under which that intent should be initiated.
+
+- int                       id
+- Uuid                      pid
+- String                    name
+- Array[Trigger]            triggers
+- Intent                    intent
+- { ACTIVE | PAUSED }       status
 
 #### GovernanceRule
 

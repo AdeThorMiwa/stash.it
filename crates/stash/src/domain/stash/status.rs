@@ -1,6 +1,8 @@
 use std::str::FromStr;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub enum StashStatus {
     ACTIVE,
     PAUSED,

@@ -1,25 +1,37 @@
+use std::sync::Arc;
+
 use crate::domain::value_objects::otp_code::OtpCode;
 use chrono::{TimeDelta, Utc};
-use shared::domain::value_objects::{date::Date, pid::Pid};
+use serde::{Deserialize, Serialize};
+use shared::{
+    domain::{
+        entity::Entity,
+        events::user::{SessionActivated, SessionTerminated},
+        value_objects::{date::Date, pid::Pid},
+    },
+    infrastructure::messaging::event::DomainEvent,
+};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Session {
     pid: Pid,
     user_id: Pid,
     code: OtpCode,
     activated: bool,
     expires_at: Date,
+    #[serde(skip)]
+    events: Vec<Arc<dyn DomainEvent>>,
 }
 
 impl Session {
     pub fn new(user_id: &Pid) -> Self {
-        let pid = Pid::new();
         Self {
-            pid,
+            pid: Pid::new(),
             user_id: user_id.clone(),
             code: OtpCode::six_digit(),
             activated: false,
             expires_at: Self::expiry(),
+            events: Vec::new(),
         }
     }
 
@@ -52,10 +64,18 @@ impl Session {
     }
 
     pub fn expire(&mut self) {
-        self.expires_at = Utc::now() - TimeDelta::minutes(10)
+        self.expires_at = Utc::now() - TimeDelta::minutes(10);
+        self.events.push(SessionTerminated::new(self.get_user_id(), self.get_pid()))
     }
 
     pub fn activate(&mut self) {
         self.activated = true;
+        self.events.push(SessionActivated::new(self.get_user_id(), self.get_pid()));
+    }
+}
+
+impl Entity for Session {
+    fn drain_events(&mut self) -> Vec<Arc<dyn DomainEvent>> {
+        self.events.drain(..).collect()
     }
 }

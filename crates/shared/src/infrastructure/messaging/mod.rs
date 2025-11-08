@@ -19,11 +19,14 @@ where
 #[async_trait]
 pub trait EventBus: Sync + Send {
     /// Publishes a domain event to all subscribers
-    async fn publish(&self, event: Box<dyn DomainEvent>) -> Result<()>;
+    async fn publish(&self, event: Arc<dyn DomainEvent>) -> Result<()>;
+
+    /// Publishes many domain events
+    async fn publish_many(&self, event: Vec<Arc<dyn DomainEvent>>) -> Result<()>;
 
     /// Subscribes a handler to a specific event type
     async fn subscribe(&self, handler: Arc<dyn EventHandler>) -> Result<()>;
 
     #[cfg(feature = "testing")]
-    async fn published(&self, event: Box<dyn DomainEvent>) -> bool;
+    async fn published(&self, event: Arc<dyn DomainEvent>) -> bool;
 }

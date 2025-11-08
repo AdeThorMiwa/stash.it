@@ -1,6 +1,7 @@
 use rand::{Rng, rng};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, Eq, PartialEq)]
+#[derive(Debug, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct OtpCode(usize);
 
 impl OtpCode {

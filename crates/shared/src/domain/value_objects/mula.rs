@@ -1,6 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 use crate::domain::value_objects::asset::Asset;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Mula {
     amount: u128,
     asset: Asset,

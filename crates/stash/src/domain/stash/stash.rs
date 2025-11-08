@@ -1,15 +1,25 @@
-use crate::domain::stash::{name::StashName, status::StashStatus, tag::Tag};
+use crate::domain::{
+    events::{StashBalanceUpdated, StashCreated, StashStatusUpdated},
+    stash::{name::StashName, status::StashStatus, tag::Tag},
+};
 use chrono::Utc;
+use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use shared::domain::value_objects::{date::Date, mula::Mula, pid::Pid};
-use std::collections::HashMap;
+use shared::{
+    domain::{
+        entity::Entity,
+        value_objects::{date::Date, mula::Mula, pid::Pid},
+    },
+    infrastructure::messaging::event::DomainEvent,
+};
+use std::{collections::HashMap, sync::Arc};
 
 pub type StashMetadata = HashMap<String, Value>;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Stash {
     pid: Pid,
-    user_id: Pid,
+    owner_id: Pid,
     name: StashName,
     status: StashStatus,
     tags: Vec<Tag>,
@@ -18,13 +28,16 @@ pub struct Stash {
     #[allow(dead_code)]
     created_at: Date,
     updated_at: Date,
+    #[serde(skip)]
+    events: Vec<Arc<dyn DomainEvent>>,
 }
 
 impl Stash {
-    pub fn new(user_id: &Pid, name: &StashName, tags: &Vec<Tag>) -> Self {
+    pub fn new(owner_id: &Pid, name: &StashName, tags: &Vec<Tag>) -> Self {
+        let pid = Pid::new();
         Self {
-            pid: Pid::new(),
-            user_id: user_id.clone(),
+            pid: pid.to_owned(),
+            owner_id: owner_id.to_owned(),
             name: name.clone(),
             status: StashStatus::ACTIVE,
             tags: tags.clone(),
@@ -32,7 +45,14 @@ impl Stash {
             metadata: HashMap::new(),
             created_at: Utc::now(),
             updated_at: Utc::now(),
+            events: Self::get_initial_events(&pid, owner_id),
         }
+    }
+
+    fn get_initial_events(pid: &Pid, owner_id: &Pid) -> Vec<Arc<dyn DomainEvent>> {
+        let mut events: Vec<Arc<dyn DomainEvent>> = Vec::new();
+        events.push(StashCreated::new(&pid, owner_id));
+        events
     }
 
     pub fn get_pid(&self) -> &Pid {
@@ -43,8 +63,8 @@ impl Stash {
         &self.name
     }
 
-    pub fn get_user_id(&self) -> &Pid {
-        &self.user_id
+    pub fn get_owner_id(&self) -> &Pid {
+        &self.owner_id
     }
 
     pub fn get_status(&self) -> &StashStatus {
@@ -71,6 +91,7 @@ impl Stash {
     pub fn update_status(&mut self, new_status: &StashStatus) {
         self.status = new_status.clone();
         self.updated_at = Utc::now();
+        self.events.push(StashStatusUpdated::new(self.get_pid(), new_status));
     }
 
     pub fn update_balance(&mut self, new_balance: &Mula) {
@@ -80,5 +101,12 @@ impl Stash {
             self.balances.push(new_balance.clone());
         }
         self.updated_at = Utc::now();
+        self.events.push(StashBalanceUpdated::new(self.get_pid(), new_balance));
+    }
+}
+
+impl Entity for Stash {
+    fn drain_events(&mut self) -> Vec<Arc<dyn DomainEvent>> {
+        self.events.drain(..).collect()
     }
 }

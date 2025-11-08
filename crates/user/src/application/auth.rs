@@ -5,10 +5,7 @@ use crate::{
 };
 use di::injectable;
 use shared::{
-    domain::{
-        events::user::{SessionActivatedEvent, SessionTerminatedEvent},
-        value_objects::pid::Pid,
-    },
+    domain::{entity::Entity, value_objects::pid::Pid},
     infrastructure::{
         messaging::EventBus,
         types::{
@@ -54,8 +51,7 @@ impl AuthenticationService {
         self.session_service.activate_session(&mut session).await?;
         let user = self.user_service.update_user_last_login(session.get_user_id()).await?;
         let token = self.jwt_service.generate_token(&user)?;
-        let session_activated_event = SessionActivatedEvent::new(session.get_user_id(), session.get_pid());
-        self.event_bus.publish(session_activated_event).await?;
+        self.event_bus.publish_many(session.drain_events()).await?;
 
         Ok(token)
     }
@@ -78,8 +74,7 @@ impl AuthenticationService {
             .ok_or(Error::DomainError(DomainError::EntityNotFound))?;
 
         self.session_service.expire_session(&mut session).await?;
-        let session_terminated_event = SessionTerminatedEvent::new(session.get_user_id(), session.get_pid());
-        self.event_bus.publish(session_terminated_event).await?;
+        self.event_bus.publish_many(session.drain_events()).await?;
 
         Ok(())
     }

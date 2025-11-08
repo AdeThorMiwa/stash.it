@@ -1,8 +1,8 @@
 use email_address::{EmailAddress as Address, Error};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::str::FromStr;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct EmailAddress(Address);
 
 pub type EmailError = Error;

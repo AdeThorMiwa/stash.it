@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use chrono::Utc;
 use shared::{
     domain::value_objects::{date::Date, mula::Mula, pid::Pid},
@@ -7,24 +9,24 @@ use shared::{
 use crate::domain::stash::status::StashStatus;
 
 #[derive(Debug)]
-pub struct StashCreatedEvent {
+pub struct StashCreated {
     pub stash_id: Pid,
-    pub user_id: Pid,
+    pub owner_id: Pid,
     pub created_at: Date,
 }
 
-impl StashCreatedEvent {
+impl StashCreated {
     #[must_use]
-    pub fn new(stash_id: &Pid, user_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+    pub fn new(stash_id: &Pid, owner_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             stash_id: stash_id.to_owned(),
-            user_id: user_id.to_owned(),
+            owner_id: owner_id.to_owned(),
             created_at: Utc::now(),
         })
     }
 }
 
-impl DomainEvent for StashCreatedEvent {
+impl DomainEvent for StashCreated {
     fn event_type(&self) -> &str {
         "StashCreated"
     }
@@ -39,15 +41,15 @@ impl DomainEvent for StashCreatedEvent {
 }
 
 #[derive(Debug)]
-pub struct StashStatusUpdatedEvent {
+pub struct StashStatusUpdated {
     stash_id: Pid,
     pub new_status: StashStatus,
     created_at: Date,
 }
 
-impl StashStatusUpdatedEvent {
-    pub fn new(stash_id: &Pid, new_status: &StashStatus) -> Box<Self> {
-        Box::new(Self {
+impl StashStatusUpdated {
+    pub fn new(stash_id: &Pid, new_status: &StashStatus) -> Arc<Self> {
+        Arc::new(Self {
             stash_id: stash_id.to_owned(),
             new_status: new_status.to_owned(),
             created_at: Utc::now(),
@@ -55,7 +57,7 @@ impl StashStatusUpdatedEvent {
     }
 }
 
-impl DomainEvent for StashStatusUpdatedEvent {
+impl DomainEvent for StashStatusUpdated {
     fn event_type(&self) -> &str {
         "StashStatusUpdated"
     }
@@ -70,15 +72,15 @@ impl DomainEvent for StashStatusUpdatedEvent {
 }
 
 #[derive(Debug)]
-pub struct StashBalanceUpdatedEvent {
+pub struct StashBalanceUpdated {
     stash_id: Pid,
     pub new_balance: Mula,
     created_at: Date,
 }
 
-impl StashBalanceUpdatedEvent {
-    pub fn new(stash_id: &Pid, new_balance: &Mula) -> Box<Self> {
-        Box::new(Self {
+impl StashBalanceUpdated {
+    pub fn new(stash_id: &Pid, new_balance: &Mula) -> Arc<Self> {
+        Arc::new(Self {
             stash_id: stash_id.to_owned(),
             new_balance: new_balance.to_owned(),
             created_at: Utc::now(),
@@ -86,7 +88,7 @@ impl StashBalanceUpdatedEvent {
     }
 }
 
-impl DomainEvent for StashBalanceUpdatedEvent {
+impl DomainEvent for StashBalanceUpdated {
     fn event_type(&self) -> &str {
         "StashBalanceUpdated"
     }
@@ -101,15 +103,15 @@ impl DomainEvent for StashBalanceUpdatedEvent {
 }
 
 #[derive(Debug)]
-pub struct LedgerEntryCreatedEvent {
+pub struct LedgerEntryCreated {
     stash_id: Pid,
     pub entry_id: Pid,
     created_at: Date,
 }
 
-impl LedgerEntryCreatedEvent {
-    pub fn new(stash_id: &Pid, entry_id: &Pid) -> Box<Self> {
-        Box::new(Self {
+impl LedgerEntryCreated {
+    pub fn new(stash_id: &Pid, entry_id: &Pid) -> Arc<Self> {
+        Arc::new(Self {
             stash_id: stash_id.to_owned(),
             entry_id: entry_id.to_owned(),
             created_at: Utc::now(),
@@ -117,7 +119,7 @@ impl LedgerEntryCreatedEvent {
     }
 }
 
-impl DomainEvent for LedgerEntryCreatedEvent {
+impl DomainEvent for LedgerEntryCreated {
     fn event_type(&self) -> &str {
         "LedgerEntryCreated"
     }
