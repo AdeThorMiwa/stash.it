@@ -1,8 +1,11 @@
-use crate::common::{
-    bootstrap::bootstrap, insta_filters::redactions::cleanup_model_generics, prepare::prepare_authenticated_user, string_utils::extract_otp,
-};
+use crate::common::{bootstrap::bootstrap, prepare::prepare_authenticated_user, string_utils::extract_otp};
 use insta::{assert_debug_snapshot, with_settings};
-use shared::infrastructure::{mailing::Mailer, types::Result};
+use shared::{
+    configure_insta,
+    domain::events::user::{SessionActivatedEvent, SessionTerminatedEvent, UserCreatedEvent},
+    infrastructure::{mailing::Mailer, messaging::EventBus, types::Result},
+    testing::insta_filters::redactions::cleanup_model_generics,
+};
 use std::{str::FromStr, sync::Arc};
 use user::{
     application::{auth::AuthenticationService, user::UserManagementService},
@@ -16,7 +19,7 @@ async fn can_create_auth_session() -> Result<()> {
     // Arrange
     configure_insta!();
     let provider = bootstrap();
-    let mailer: Arc<dyn Mailer> = provider.get_required();
+    let mailer = provider.get_required::<dyn Mailer>();
     let authentication_service: Arc<AuthenticationService> = provider.get_required();
     let email = EmailAddress::from_str("tom@stash.it").unwrap();
 
@@ -37,11 +40,15 @@ async fn can_activate_auth_session() -> Result<()> {
     // Arrange
     configure_insta!();
     let provider = bootstrap();
-
-    let (pid, ..) = prepare_authenticated_user(&provider).await?;
+    let event_bus = provider.get_required::<dyn EventBus>();
+    let (pid, session_id) = prepare_authenticated_user(&provider).await?;
 
     let user_service: Arc<UserManagementService> = provider.get_required();
     let user = user_service.get_user_by_pid(&pid).await?.unwrap();
+
+    // Assert
+    assert!(event_bus.published(SessionActivatedEvent::new(user.get_pid(), &session_id)).await);
+    assert!(event_bus.published(UserCreatedEvent::new(user.get_pid())).await);
 
     with_settings!({
         filters => cleanup_model_generics(),
@@ -58,9 +65,10 @@ async fn can_terminate_auth_session() -> Result<()> {
     // Arrange
     configure_insta!();
     let provider = bootstrap();
+    let event_bus = provider.get_required::<dyn EventBus>();
     let authentication_service: Arc<AuthenticationService> = provider.get_required();
 
-    let (_, session_id) = prepare_authenticated_user(&provider).await?;
+    let (user_id, session_id) = prepare_authenticated_user(&provider).await?;
 
     let is_valid_session = authentication_service.is_valid_session(&session_id).await?;
 
@@ -70,6 +78,7 @@ async fn can_terminate_auth_session() -> Result<()> {
     let is_valid_session = authentication_service.is_valid_session(&session_id).await?;
 
     assert_eq!(is_valid_session, false);
+    assert!(event_bus.published(SessionTerminatedEvent::new(&user_id, &session_id)).await);
 
     Ok(())
 }

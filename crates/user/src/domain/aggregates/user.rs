@@ -1,6 +1,6 @@
-use crate::domain::value_objects::{email::EmailAddress, user_status::UserStatus};
+use crate::domain::value_objects::email::EmailAddress;
 use chrono::Utc;
-use shared::domain::value_objects::{date::Date, pid::Pid};
+use shared::domain::value_objects::{date::Date, pid::Pid, user_status::UserStatus};
 
 #[derive(Debug, Clone)]
 pub struct User {
@@ -27,8 +27,8 @@ impl User {
     }
 
     /// update user status to `new_status`
-    pub fn update_status(&mut self, new_status: UserStatus) {
-        self.status = new_status;
+    pub fn update_status(&mut self, new_status: &UserStatus) {
+        self.status = new_status.clone();
     }
 
     /// update user last login time to now

@@ -33,5 +33,6 @@ pub struct Deliveries {
 #[async_trait]
 pub trait Mailer: Sync + Send {
     async fn mail(&self, email: &Email) -> Result<()>;
+    #[cfg(feature = "testing")]
     async fn deliveries(&self) -> Deliveries;
 }

@@ -1,6 +1,9 @@
-use crate::common::{bootstrap::bootstrap, insta_filters::redactions::cleanup_model_generics, prepare::prepare_authenticated_user};
+use crate::common::{bootstrap::bootstrap, prepare::prepare_authenticated_user};
 use insta::{assert_debug_snapshot, with_settings};
-use shared::{domain::value_objects::wallet_address::WalletAddress, infrastructure::types::Result};
+use shared::{
+    configure_insta, domain::value_objects::wallet_address::WalletAddress, infrastructure::types::Result,
+    testing::insta_filters::redactions::cleanup_model_generics,
+};
 use std::{str::FromStr, sync::Arc};
 use user::{
     application::user::{UserManagementService, command::CreateUserProfileCommand},
